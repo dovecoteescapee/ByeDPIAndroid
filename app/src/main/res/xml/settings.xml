@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_port"
+        android:title="Port"
+        android:inputType="number"
+        android:defaultValue="1080"
+        app:useSimpleSummaryProvider="true"/>
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_max_connections"
+        android:title="Maximum number of connections"
+        android:inputType="number"
+        android:defaultValue="512"
+        app:useSimpleSummaryProvider="true"/>
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_buffer_size"
+        android:title="Buffer size"
+        android:inputType="number"
+        android:defaultValue="16384"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_default_ttl"
+        android:title="Default TTL"
+        android:inputType="number"
+        android:defaultValue="0"
+        app:useSimpleSummaryProvider="true" />
+
+    <CheckBoxPreference
+        android:key="byedpi_no_domain"
+        android:title="No domain"
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+        android:key="byedpi_desync_knows"
+        android:title="Desync only HTTPS and TLS"
+        android:defaultValue="false"/>
+
+    <DropDownPreference
+        android:key="byedpi_desync_method"
+        android:title="Desync method"
+        android:entries="@array/byedpi_desync_methods"
+        android:entryValues="@array/byedpi_desync_methods_entries"
+        android:defaultValue="none"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_split_position"
+        android:title="Split position"
+        android:inputType="number"
+        android:defaultValue="3"
+        app:useSimpleSummaryProvider="true" />
+
+    <CheckBoxPreference
+        android:key="byedpi_split_at_host"
+        android:title="Split at host"
+        android:defaultValue="0"/>
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_fake_ttl"
+        android:title="TTL of fake packets"
+        android:inputType="number"
+        android:defaultValue="8"
+        app:useSimpleSummaryProvider="true" />
+
+    <CheckBoxPreference
+        android:key="byedpi_host_mixed_case"
+        android:title="Host mixed case"
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+        android:key="byedpi_domain_mixed_case"
+        android:title="Domain mixed case"
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+        android:key="byedpi_host_remove_spaces"
+        android:title="Host remove spaces"
+        android:defaultValue="false"/>
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_tlsrec"
+        android:title="TLS record split position"
+        android:inputType="number"
+        android:defaultValue="0"
+        app:useSimpleSummaryProvider="true" />
+
+    <CheckBoxPreference
+        android:key="byedpi_tlsrec_at_sni"
+        android:title="Split TLS record at SNI"
+        android:defaultValue="false"/>
+
+</PreferenceScreen>
