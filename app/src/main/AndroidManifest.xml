@@ -29,7 +29,8 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:exported="true" />
+            android:label="@string/title_settings"
+            android:exported="false"/>
 
         <service android:name=".ByeDpiVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"

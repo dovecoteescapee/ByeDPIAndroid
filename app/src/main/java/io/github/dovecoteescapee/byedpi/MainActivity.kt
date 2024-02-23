@@ -4,21 +4,23 @@ import android.content.Intent
 import android.net.VpnService
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.preference.PreferenceManager
 import io.github.dovecoteescapee.byedpi.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private val register = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            startVpnService()
-        } else {
-            Toast.makeText(this, R.string.vpn_permission_denied, Toast.LENGTH_SHORT).show()
+    private val register =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                startVpnService()
+            } else {
+                Toast.makeText(this, R.string.vpn_permission_denied, Toast.LENGTH_SHORT).show()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,18 +46,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.settingsButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            if (ByeDpiVpnService.status == Status.RUNNING) {
-                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                startActivity(intent)
-            }
-        }
-
         updateStatus(ByeDpiVpnService.status)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                if (ByeDpiVpnService.status == Status.RUNNING) {
+                    Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    startActivity(intent)
+                }
+
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
 
     private fun startVpnService() {
         val intent = Intent(this, ByeDpiVpnService::class.java)
@@ -67,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ByeDpiVpnService::class.java)
         intent.action = "stop"
         startService(intent)
+        stopService(intent)
     }
 
     private fun updateStatus(status : Status) {

@@ -3,9 +3,12 @@
 #include <params.h>
 #include <packets.h>
 #include <jni.h>
+#include <android/log.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <string.h>
 
-extern int big_loop(int fd);
+extern int NOT_EXIT;
 
 struct packet fake_tls = {
         sizeof(tls_data), tls_data
@@ -33,7 +36,7 @@ struct params params = {
         .max_open = 512,
         .bfsize = 16384,
         .baddr = {
-                .sin6_family = AF_INET6
+                .sin6_family = AF_INET
         },
         .debug = 2
 };
@@ -55,8 +58,16 @@ int get_default_ttl()
     return orig_ttl;
 }
 
-JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_startProxy__IIIIZZIIZIZZZIZ(
+void *run(void *srv) {
+    LOG(LOG_S, "Start proxy thread");
+    listener(*((struct sockaddr_ina *) srv));
+    free(srv);
+    LOG(LOG_S, "Stop proxy thread");
+    return NULL;
+}
+
+JNIEXPORT jlong JNICALL
+Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_jniStartProxy(
         JNIEnv *env,
         jobject thiz,
         jint port,
@@ -72,7 +83,8 @@ Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_startProxy__IIIIZZIIZIZZZ
         jboolean host_mixed_case,
         jboolean domain_mixed_case,
         jboolean host_remove_space,
-        jint tls_record_split,
+        jboolean tls_record_split,
+        jint tls_record_split_position,
         jboolean tls_record_split_at_sni) {
     enum demode desync_methods[] = {DESYNC_NONE, DESYNC_SPLIT, DESYNC_DISORDER, DESYNC_FAKE};
 
@@ -89,6 +101,7 @@ Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_startProxy__IIIIZZIIZIZZZ
     params.mod_http |= domain_mixed_case ? MH_DMIX : 0;
     params.mod_http |= host_remove_space ? MH_SPACE : 0;
     params.tlsrec = tls_record_split;
+    params.tlsrec_pos = tls_record_split_position;
     params.tlsrec_sni = tls_record_split_at_sni;
 
     if (!params.def_ttl && params.attack != DESYNC_NONE) {
@@ -97,12 +110,23 @@ Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_startProxy__IIIIZZIIZIZZZ
         }
     }
 
-    struct sockaddr_ina srv = {
-            .in = {
-                    .sin_family = AF_INET,
-                    .sin_port = htons(port),
-            }
-    };
+    struct sockaddr_ina *srv = malloc(sizeof(struct sockaddr_ina));
+    srv->in.sin_family = AF_INET;
+    srv->in.sin_addr.s_addr = inet_addr("0.0.0.0");
+    srv->in.sin_port = htons(port);
 
-    return listener(srv);
+    NOT_EXIT = 1;
+
+    pthread_t proxy_thread;
+    if (pthread_create(&proxy_thread, NULL, run, srv) != 0) {
+        LOG(LOG_S, "Failed to start proxy thread");
+        return -1;
+    }
+
+    return proxy_thread;
+}
+
+JNIEXPORT void JNICALL
+Java_io_github_dovecoteescapee_byedpi_ByeDpiVpnService_jniStopProxy(JNIEnv *env, jobject thiz, jlong proxy_thread) {
+    NOT_EXIT = 0;
 }

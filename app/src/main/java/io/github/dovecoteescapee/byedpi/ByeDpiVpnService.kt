@@ -5,28 +5,26 @@ import android.content.Intent
 import android.net.VpnService
 import android.os.Build
 import android.os.IBinder
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ServiceLifecycleDispatcher
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import engine.Engine
 import engine.Key
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-
 
 class ByeDpiVpnService : VpnService(), LifecycleOwner {
-    private val TAG: String = this::class.java.simpleName
-    private var proxyJob: Job? = null
+    private var proxyThread: Long = -1
+    private var vpn: ParcelFileDescriptor? = null
 
     private val dispatcher = ServiceLifecycleDispatcher(this)
     override val lifecycle: Lifecycle
         get() = dispatcher.lifecycle
 
     companion object {
+        private val TAG: String = ByeDpiVpnService::class.java.simpleName
+
         var status: Status = Status.STOPPED
             private set
     }
@@ -48,6 +46,7 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
                     run()
                     START_STICKY
                 }
+
                 "stop" -> {
                     stop()
                     START_NOT_STICKY
@@ -75,26 +74,30 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
     }
 
     private fun run() {
-        val preferences = getPreferences();
-
+        val preferences = getPreferences()
         status = Status.RUNNING
 
-        if (proxyJob != null) {
+        if (proxyThread >= 0) {
             Log.w(TAG, "Proxy already running")
             return
         }
 
-        proxyJob = lifecycleScope.launch(Dispatchers.IO) {
-            runProxy(preferences)
+        proxyThread = startProxy(preferences)
+        if (proxyThread < 0) {
+            status = Status.STOPPED
+            Log.e(TAG, "Proxy failed to start")
+            return
         }
 
         val vpn = getBuilder().establish()
+        this.vpn = vpn
         if (vpn == null) {
             Log.e(TAG, "VPN connection failed")
             return
         }
 
-        startTun2Socks(vpn.detachFd(), preferences.port)
+        Log.d(TAG, "fd: ${vpn.fd}")
+        startTun2Socks(vpn.fd, preferences.port)
     }
 
     private fun getPreferences(): ByeDpiProxyPreferences {
@@ -102,36 +105,38 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
 
         return ByeDpiProxyPreferences(
             port =
-                sharedPreferences.getString("byedpi_proxy_port", null)?.toInt(),
+            sharedPreferences.getString("byedpi_proxy_port", null)?.toInt(),
             maxConnections =
-                sharedPreferences.getString("byedpi_max_connections", null)?.toInt(),
+            sharedPreferences.getString("byedpi_max_connections", null)?.toInt(),
             bufferSize =
-                sharedPreferences.getString("byedpi_buffer_size", null)?.toInt(),
+            sharedPreferences.getString("byedpi_buffer_size", null)?.toInt(),
             defaultTtl =
-                sharedPreferences.getString("byedpi_default_ttl", null)?.toInt(),
+            sharedPreferences.getString("byedpi_default_ttl", null)?.toInt(),
             noDomain =
-                sharedPreferences.getBoolean("byedpi_no_domain", false),
+            sharedPreferences.getBoolean("byedpi_no_domain", false),
             desyncKnown =
-                sharedPreferences.getBoolean("byedpi_desync_known", false),
+            sharedPreferences.getBoolean("byedpi_desync_known", false),
             desyncMethod =
-                sharedPreferences.getString("byedpi_desync_method", null)
-                    ?.let { ByeDpiProxyPreferences.DesyncMethod.fromName(it) },
+            sharedPreferences.getString("byedpi_desync_method", null)
+                ?.let { ByeDpiProxyPreferences.DesyncMethod.fromName(it) },
             splitPosition =
-                sharedPreferences.getString("byedpi_split_position", null)?.toInt(),
+            sharedPreferences.getString("byedpi_split_position", null)?.toInt(),
             splitAtHost =
-                sharedPreferences.getBoolean("byedpi_split_at_host", false),
+            sharedPreferences.getBoolean("byedpi_split_at_host", false),
             fakeTtl =
-                sharedPreferences.getString("byedpi_fake_ttl", null)?.toInt(),
+            sharedPreferences.getString("byedpi_fake_ttl", null)?.toInt(),
             hostMixedCase =
-                sharedPreferences.getBoolean("byedpi_host_mixed_case", false),
+            sharedPreferences.getBoolean("byedpi_host_mixed_case", false),
             domainMixedCase =
-                sharedPreferences.getBoolean("byedpi_domain_mixed_case", false),
+            sharedPreferences.getBoolean("byedpi_domain_mixed_case", false),
             hostRemoveSpaces =
-                sharedPreferences.getBoolean("byedpi_host_remove_spaces", false),
+            sharedPreferences.getBoolean("byedpi_host_remove_spaces", false),
             tlsRecordSplit =
-                sharedPreferences.getString("byedpi_tlsrec", null)?.toInt(),
+            sharedPreferences.getBoolean("byedpi_tlsrec", false),
+            tlsRecordSplitPosition =
+            sharedPreferences.getString("byedpi_tlsrec_position", null)?.toInt(),
             tlsRecordSplitAtSni =
-                sharedPreferences.getBoolean("byedpi_tlsrec_at_sni", false),
+            sharedPreferences.getBoolean("byedpi_tlsrec_at_sni", false),
         )
     }
 
@@ -141,9 +146,9 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
         stopProxy()
     }
 
-    private fun runProxy(preferences: ByeDpiProxyPreferences) : Int {
+    private fun startProxy(preferences: ByeDpiProxyPreferences): Long {
         Log.i(TAG, "Proxy started")
-        val res = startProxy(
+        return jniStartProxy(
             port = preferences.port,
             maxConnections = preferences.maxConnections,
             bufferSize = preferences.bufferSize,
@@ -158,21 +163,20 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
             domainMixedCase = preferences.domainMixedCase,
             hostRemoveSpace = preferences.hostRemoveSpaces,
             tlsRecordSplit = preferences.tlsRecordSplit,
+            tlsRecordSplitPosition = preferences.tlsRecordSplitPosition,
             tlsRecordSplitAtSni = preferences.tlsRecordSplitAtSni,
         )
-        Log.i(TAG, "Proxy stopped")
-        return res
     }
 
     private fun stopProxy() {
-        proxyJob?.let {
-            Log.i(TAG, "Proxy stopped")
-            it.cancel()
-            proxyJob = null
-        } ?: Log.w(TAG, "Proxy not running")
+        if (proxyThread < 0) {
+            Log.w(TAG, "Proxy not running")
+        }
+        jniStopProxy(proxyThread)
+        proxyThread = -1
     }
 
-    private fun startTun2Socks(fd: Int, port:Int) {
+    private fun startTun2Socks(fd: Int, port: Int) {
         val key = Key().apply {
             mark = 0
             mtu = 0
@@ -197,10 +201,10 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
 
     private fun stopTun2Socks() {
         Log.i(TAG, "Tun2socks stopped")
-        Engine.stop()
+        vpn?.close() ?: Log.w(TAG, "VPN not running")
     }
 
-    private external fun startProxy(
+    private external fun jniStartProxy(
         port: Int,
         maxConnections: Int,
         bufferSize: Int,
@@ -214,9 +218,12 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
         hostMixedCase: Boolean,
         domainMixedCase: Boolean,
         hostRemoveSpace: Boolean,
-        tlsRecordSplit: Int,
+        tlsRecordSplit: Boolean,
+        tlsRecordSplitPosition: Int,
         tlsRecordSplitAtSni: Boolean,
-    ): Int
+    ): Long
+
+    private external fun jniStopProxy(proxyThread: Long)
 
     private fun getBuilder(): Builder {
         val builder = Builder()
@@ -230,11 +237,13 @@ class ByeDpiVpnService : VpnService(), LifecycleOwner {
             )
         )
 
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val dns = sharedPreferences.getString("dns_ip", "9.9.9.9")!!
+
         builder.addAddress("10.10.10.10", 32)
         builder.addRoute("0.0.0.0", 0)
         builder.addRoute("0:0:0:0:0:0:0:0", 0)
-        builder.addDnsServer("1.1.1.1")
-        builder.addDnsServer("1.0.0.1")
+        builder.addDnsServer(dns)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
         }

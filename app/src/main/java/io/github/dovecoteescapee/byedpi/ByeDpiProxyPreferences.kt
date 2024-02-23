@@ -14,7 +14,8 @@ class ByeDpiProxyPreferences(
     hostMixedCase: Boolean? = null,
     domainMixedCase: Boolean? = null,
     hostRemoveSpaces: Boolean? = null,
-    tlsRecordSplit: Int? = null,
+    tlsRecordSplit: Boolean? = null,
+    tlsRecordSplitPosition: Int? = null,
     tlsRecordSplitAtSni: Boolean? = null,
 ) {
     val port: Int = port ?: 1080
@@ -23,14 +24,15 @@ class ByeDpiProxyPreferences(
     val defaultTtl: Int = defaultTtl ?: 0
     val noDomain: Boolean = noDomain ?: false
     val desyncKnown: Boolean = desyncKnown ?: false
-    val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.None
+    val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
     val splitPosition: Int = splitPosition ?: 3
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
     val hostMixedCase: Boolean = hostMixedCase ?: false
     val domainMixedCase: Boolean = domainMixedCase ?: false
     val hostRemoveSpaces: Boolean = hostRemoveSpaces ?: false
-    val tlsRecordSplit: Int = tlsRecordSplit ?: 0
+    val tlsRecordSplit: Boolean = tlsRecordSplit ?: false
+    val tlsRecordSplitPosition: Int = tlsRecordSplitPosition ?: 0
     val tlsRecordSplitAtSni: Boolean = tlsRecordSplitAtSni ?: false
 
     enum class DesyncMethod {

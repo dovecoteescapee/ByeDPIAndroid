@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:tag="settings_screen">
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="dns_ip"
+        android:title="DNS"
+        android:defaultValue="9.9.9.9"
+        app:useSimpleSummaryProvider="true"/>
 
     <com.takisoft.preferencex.EditTextPreference
         android:key="byedpi_port"
@@ -45,13 +52,13 @@
         android:title="Desync method"
         android:entries="@array/byedpi_desync_methods"
         android:entryValues="@array/byedpi_desync_methods_entries"
-        android:defaultValue="none"
+        android:defaultValue="disorder"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference
         android:key="byedpi_split_position"
         android:title="Split position"
-        android:inputType="number"
+        android:inputType="numberSigned"
         android:defaultValue="3"
         app:useSimpleSummaryProvider="true" />
 
@@ -82,10 +89,15 @@
         android:title="Host remove spaces"
         android:defaultValue="false"/>
 
+    <CheckBoxPreference
+        android:key="byedpi_tlsrec_enabled"
+        android:title="Split TLS record"
+        android:defaultValue="false"/>
+
     <com.takisoft.preferencex.EditTextPreference
-        android:key="byedpi_tlsrec"
+        android:key="byedpi_tlsrec_position"
         android:title="TLS record split position"
-        android:inputType="number"
+        android:inputType="numberSigned"
         android:defaultValue="0"
         app:useSimpleSummaryProvider="true" />
 

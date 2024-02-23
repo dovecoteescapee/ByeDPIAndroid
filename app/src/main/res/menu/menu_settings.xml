@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/action_reset_settings"
+        android:orderInCategory="1"
+        android:title="@string/reset_settings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_save_logs"
+        android:orderInCategory="2"
+        android:title="@string/save_logs"
+        app:showAsAction="never" />
+
+</menu>

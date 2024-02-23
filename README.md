@@ -1,6 +1,6 @@
 # ByeDPI for Android
 
-Application for Android that start a local VPN service to bypass DPI (Deep Packet Inspection) and unblock the internet
+Application for Android that start a local VPN service to bypass DPI (Deep Packet Inspection) and censorship.
 
 ## Features
 
