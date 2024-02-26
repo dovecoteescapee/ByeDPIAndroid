@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <item
         android:id="@+id/action_settings"
@@ -10,5 +10,11 @@
         android:title="@string/title_settings"
         android:icon="@drawable/baseline_settings_24"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_save_logs"
+        android:orderInCategory="2"
+        android:title="@string/save_logs"
+        app:showAsAction="never" />
 
 </menu>

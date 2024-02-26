@@ -30,12 +30,15 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         byedpi/desync.c
         byedpi/packets.c
         byedpi/proxy.c
+        byedpi/main.c
         native-lib.c
         )
 
 include_directories("byedpi")
 
 set(CMAKE_C_FLAGS "-std=c99 -O2 -D_XOPEN_SOURCE=500")
+
+add_compile_definitions(ANDROID_APP)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this

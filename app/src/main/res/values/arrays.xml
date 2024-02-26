@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <array name="themes">
+        <item name="system">System</item>
+        <item name="light">Light</item>
+        <item name="dark">Dark</item>
+    </array>
+    <array name="themes_entries">
+        <item name="system">system</item>
+        <item name="light">light</item>
+        <item name="dark">dark</item>
+    </array>
+
+    <array name="byedpi_modes">
+        <item name="vpn">VPN</item>
+        <item name="proxy">Proxy</item>
+    </array>
+    <array name="byedpi_modes_entries">
+        <item name="vpn">vpn</item>
+        <item name="proxy">proxy</item>
+    </array>
+
     <array name="byedpi_desync_methods">
         <item name="none">None</item>
         <item name="split">Split</item>

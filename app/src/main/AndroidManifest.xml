@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ByeDPI"
-        tools:targetApi="31">
+        tools:targetApi="34">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".activities.MainActivity"
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +29,31 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_settings"
-            android:exported="false"/>
+            android:exported="true"/>
 
-        <service android:name=".ByeDpiVpnService"
+        <service android:name=".services.ByeDpiVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
-            android:exported="true">
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.net.VpnService"/>
             </intent-filter>
+            <meta-data
+                android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
+                android:value="false" />
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="vpn" />
+        </service>
+
+        <service android:name=".services.ByeDpiProxyService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="proxy" />
         </service>
     </application>
 

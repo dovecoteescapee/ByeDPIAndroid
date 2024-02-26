@@ -11,18 +11,27 @@ android {
 
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.1.1-alpha"
+        versionCode = 3
+        versionName = "1.0.0-rc1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
+            buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
+
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}-debug\"")
         }
     }
     compileOptions {
@@ -72,7 +81,7 @@ abstract class BuildTun2Socks : DefaultTask() {
         }
         project.exec {
             workingDir = tun2socksDir
-            commandLine("gomobile", "bind", "-o", tun2socksOutput, "./engine")
+            commandLine("gomobile", "bind", "-o", tun2socksOutput, "-trimpath", "./engine")
         }
     }
 }
