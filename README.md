@@ -45,5 +45,5 @@ DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic
 ## Dependencies
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
-- [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*
+- [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*  
   *fork with the addition of separate tunneling of TCP and UDP
