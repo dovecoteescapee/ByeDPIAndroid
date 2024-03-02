@@ -8,7 +8,10 @@ class ByeDpiProxy {
     companion object {
         init {
             System.loadLibrary("byedpi")
+            jniInit()
         }
+
+        private external fun jniInit(): Int
     }
 
     private val mutex = Mutex()
@@ -49,6 +52,8 @@ class ByeDpiProxy {
                 splitPosition = preferences.splitPosition,
                 splitAtHost = preferences.splitAtHost,
                 fakeTtl = preferences.fakeTtl,
+                fakeSni = preferences.fakeSni,
+                oobData = preferences.oobData,
                 hostMixedCase = preferences.hostMixedCase,
                 domainMixedCase = preferences.domainMixedCase,
                 hostRemoveSpaces = preferences.hostRemoveSpaces,
@@ -77,6 +82,8 @@ class ByeDpiProxy {
         splitPosition: Int,
         splitAtHost: Boolean,
         fakeTtl: Int,
+        fakeSni: String,
+        oobData: String,
         hostMixedCase: Boolean,
         domainMixedCase: Boolean,
         hostRemoveSpaces: Boolean,

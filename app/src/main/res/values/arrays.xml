@@ -25,11 +25,13 @@
         <item name="split">Split</item>
         <item name="disorder">Disorder</item>
         <item name="fake">Fake</item>
+        <item name="oob">Out-of-band</item>
     </array>
     <array name="byedpi_desync_methods_entries">
         <item name="none">none</item>
         <item name="split">split</item>
         <item name="disorder">disorder</item>
         <item name="fake">fake</item>
+        <item name="oob">oob</item>
     </array>
 </resources>

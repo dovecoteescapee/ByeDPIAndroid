@@ -14,6 +14,8 @@ class ByeDpiProxyPreferences(
     splitPosition: Int? = null,
     splitAtHost: Boolean? = null,
     fakeTtl: Int? = null,
+    fakeSni: String? = null,
+    oobData: String? = null,
     hostMixedCase: Boolean? = null,
     domainMixedCase: Boolean? = null,
     hostRemoveSpaces: Boolean? = null,
@@ -32,6 +34,8 @@ class ByeDpiProxyPreferences(
     val splitPosition: Int = splitPosition ?: 3
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
+    val fakeSni: String = fakeSni ?: "www.w3c.org"
+    val oobData: String = oobData ?: "a"
     val hostMixedCase: Boolean = hostMixedCase ?: false
     val domainMixedCase: Boolean = domainMixedCase ?: false
     val hostRemoveSpaces: Boolean = hostRemoveSpaces ?: false
@@ -52,6 +56,8 @@ class ByeDpiProxyPreferences(
         splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),
         splitAtHost = preferences.getBoolean("byedpi_split_at_host", false),
         fakeTtl = preferences.getString("byedpi_fake_ttl", null)?.toIntOrNull(),
+        fakeSni = preferences.getString("byedpi_fake_sni", null),
+        oobData = preferences.getString("byedpi_oob_data", null),
         hostMixedCase = preferences.getBoolean("byedpi_host_mixed_case", false),
         domainMixedCase = preferences.getBoolean("byedpi_domain_mixed_case", false),
         hostRemoveSpaces = preferences.getBoolean("byedpi_host_remove_spaces", false),
@@ -64,7 +70,8 @@ class ByeDpiProxyPreferences(
         None,
         Split,
         Disorder,
-        Fake;
+        Fake,
+        OOB;
 
         companion object {
             fun fromName(name: String): DesyncMethod {
@@ -73,6 +80,7 @@ class ByeDpiProxyPreferences(
                     "split" -> Split
                     "disorder" -> Disorder
                     "fake" -> Fake
+                    "oob" -> OOB
                     else -> throw IllegalArgumentException("Unknown desync method: $name")
                 }
             }

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:tag="settings_screen">
 
-    <PreferenceCategory
-        android:title="General">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/general_category">
 
         <DropDownPreference
             android:key="app_theme"
@@ -23,10 +23,10 @@
             android:defaultValue="vpn"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="ByeDPI">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/byedpi_category">
 
         <Preference
             android:key="byedpi_readme"
@@ -115,6 +115,18 @@
             android:defaultValue="8"
             app:useSimpleSummaryProvider="true" />
 
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_fake_sni"
+            android:title="SNI of fake packet"
+            android:defaultValue="www.w3c.org"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_oob_data"
+            android:title="OOB Data"
+            android:defaultValue="a"
+            app:useSimpleSummaryProvider="true" />
+
         <CheckBoxPreference
             android:key="byedpi_host_mixed_case"
             android:title="@string/byedpi_host_mixed_case_setting"
@@ -147,10 +159,10 @@
             android:title="@string/byedpi_tlsrec_at_sni_setting"
             android:defaultValue="false" />
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="About">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/about_category">
 
         <Preference
             android:key="version"
@@ -167,6 +179,6 @@
                 android:data="https://github.com/dovecoteescapee/ByeDPIAndroid" />
         </Preference>
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
 </PreferenceScreen>

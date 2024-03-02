@@ -13,13 +13,21 @@ const enum demode DESYNC_METHODS[] = {
         DESYNC_NONE,
         DESYNC_SPLIT,
         DESYNC_DISORDER,
-        DESYNC_FAKE
+        DESYNC_FAKE,
+        DESYNC_OOB,
 };
 
 extern int NOT_EXIT;
-extern struct packet fake_tls, fake_http;
+
 extern int get_default_ttl();
+
 extern int get_addr(const char *str, struct sockaddr_ina *addr);
+
+JNIEXPORT jint JNICALL
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_00024Companion_jniInit(JNIEnv *env, jobject thiz) {
+    oob_data.data = NULL;
+    return 0;
+}
 
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
@@ -36,6 +44,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jint split_position,
         jboolean split_at_host,
         jint fake_ttl,
+        jstring fake_sni,
+        jstring custom_oob_data,
         jboolean host_mixed_case,
         jboolean domain_mixed_case,
         jboolean host_remove_spaces,
@@ -52,6 +62,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     if (get_addr(address, &s) < 0) {
         return -1;
     }
+    (*env)->ReleaseStringUTFChars(env, ip, address);
+
     s.in.sin_port = htons(port);
 
     params.max_open = max_connections;
@@ -81,6 +93,34 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     if (fd < 0) {
         uniperror("listen_socket");
         return get_e();
+    }
+
+    if (params.attack == DESYNC_FAKE) {
+        const char *sni = (*env)->GetStringUTFChars(env, fake_sni, 0);
+        LOG(LOG_S, "fake_sni: %s", sni);
+        int res = change_tls_sni(sni, fake_tls.data, fake_tls.size);
+        (*env)->ReleaseStringUTFChars(env, fake_sni, sni);
+        if (res) {
+            fprintf(stderr, "error chsni\n");
+            return -1;
+        }
+    }
+
+    if (params.attack == DESYNC_OOB) {
+        const char *oob = (*env)->GetStringUTFChars(env, custom_oob_data, 0);
+        const size_t oob_len = strlen(oob);
+        LOG(LOG_L, "custom_oob_data: %s", oob);
+        oob_data.size = oob_len;
+        LOG(LOG_L, "before free");
+        free(oob_data.data);
+        LOG(LOG_L, "after free");
+        oob_data.data = malloc(oob_len);
+        if (oob_data.data == NULL) {
+            uniperror("malloc");
+            return -1;
+        }
+        memcpy(oob_data.data, oob, oob_len);
+        (*env)->ReleaseStringUTFChars(env, custom_oob_data, oob);
     }
 
     LOG(LOG_S, "listen_socket, fd: %d", fd);
