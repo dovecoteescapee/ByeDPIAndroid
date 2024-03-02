@@ -1,5 +1,7 @@
 package io.github.dovecoteescapee.byedpi.core
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.IOException
 
 class ByeDpiProxy {
@@ -9,42 +11,61 @@ class ByeDpiProxy {
         }
     }
 
-    private val fd = jniEventFd()
+    private val mutex = Mutex()
+    private var fd = -1
 
-    init {
-        if (fd < 0) {
-            throw IOException("Failed to create eventfd")
+    suspend fun startProxy(preferences: ByeDpiProxyPreferences): Int =
+        jniStartProxy(createSocket(preferences))
+
+    suspend fun stopProxy(): Int {
+        mutex.withLock {
+            if (fd < 0) {
+                throw IllegalStateException("Proxy is not running")
+            }
+
+            val result = jniStopProxy(fd)
+            if (result == 0) {
+                fd = -1
+            }
+            return result
         }
     }
 
-    fun startProxy(preferences: ByeDpiProxyPreferences): Int =
-        jniStartProxy(
-            eventFd = fd,
-            ip = preferences.ip,
-            port = preferences.port,
-            maxConnections = preferences.maxConnections,
-            bufferSize = preferences.bufferSize,
-            defaultTtl = preferences.defaultTtl,
-            noDomain = preferences.noDomain,
-            desyncKnown = preferences.desyncKnown,
-            desyncMethod = preferences.desyncMethod.ordinal,
-            splitPosition = preferences.splitPosition,
-            splitAtHost = preferences.splitAtHost,
-            fakeTtl = preferences.fakeTtl,
-            hostMixedCase = preferences.hostMixedCase,
-            domainMixedCase = preferences.domainMixedCase,
-            hostRemoveSpaces = preferences.hostRemoveSpaces,
-            tlsRecordSplit = preferences.tlsRecordSplit,
-            tlsRecordSplitPosition = preferences.tlsRecordSplitPosition,
-            tlsRecordSplitAtSni = preferences.tlsRecordSplitAtSni,
-        )
+    private suspend fun createSocket(preferences: ByeDpiProxyPreferences): Int =
+        mutex.withLock {
+            if (fd >= 0) {
+                throw IllegalStateException("Proxy is already running")
+            }
 
-    fun stopProxy(): Int = jniStopProxy(fd)
+            val fd = jniCreateSocket(
+                ip = preferences.ip,
+                port = preferences.port,
+                maxConnections = preferences.maxConnections,
+                bufferSize = preferences.bufferSize,
+                defaultTtl = preferences.defaultTtl,
+                noDomain = preferences.noDomain,
+                desyncKnown = preferences.desyncKnown,
+                desyncMethod = preferences.desyncMethod.ordinal,
+                splitPosition = preferences.splitPosition,
+                splitAtHost = preferences.splitAtHost,
+                fakeTtl = preferences.fakeTtl,
+                hostMixedCase = preferences.hostMixedCase,
+                domainMixedCase = preferences.domainMixedCase,
+                hostRemoveSpaces = preferences.hostRemoveSpaces,
+                tlsRecordSplit = preferences.tlsRecordSplit,
+                tlsRecordSplitPosition = preferences.tlsRecordSplitPosition,
+                tlsRecordSplitAtSni = preferences.tlsRecordSplitAtSni,
+            )
 
-    private external fun jniEventFd(): Int
+            if (fd < 0) {
+                throw IOException("Failed to create socket")
+            }
 
-    private external fun jniStartProxy(
-        eventFd: Int,
+            this.fd = fd
+            fd
+        }
+
+    private external fun jniCreateSocket(
         ip: String,
         port: Int,
         maxConnections: Int,
@@ -64,5 +85,7 @@ class ByeDpiProxy {
         tlsRecordSplitAtSni: Boolean,
     ): Int
 
-    private external fun jniStopProxy(eventFd: Int): Int
+    private external fun jniStartProxy(fd: Int): Int
+
+    private external fun jniStopProxy(fd: Int): Int
 }

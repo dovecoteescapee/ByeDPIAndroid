@@ -29,17 +29,15 @@ import io.github.dovecoteescapee.byedpi.utility.registerNotificationChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class ByeDpiVpnService : LifecycleVpnService() {
-    private var proxy: ByeDpiProxy? = null
+    private val proxy = ByeDpiProxy()
     private var proxyJob: Job? = null
     private var vpn: ParcelFileDescriptor? = null
-    private val semaphore = Semaphore(1)
-
-    @Volatile
+    private val mutex = Mutex()
     private var stopping: Boolean = false
 
     companion object {
@@ -94,7 +92,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         try {
-            semaphore.withPermit {
+            mutex.withLock {
                 startProxy()
                 startTun2Socks()
             }
@@ -123,8 +121,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun stop() {
         Log.i(TAG, "Stopping")
 
-        // Wait end of starting
-        semaphore.withPermit {
+        mutex.withLock {
             stopping = true
             try {
                 stopTun2Socks()
@@ -143,16 +140,15 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun startProxy() {
         Log.i(TAG, "Starting proxy")
 
-        if (proxy != null || proxyJob != null) {
+        if (proxyJob != null) {
             Log.w(TAG, "Proxy fields not null")
             throw IllegalStateException("Proxy fields not null")
         }
 
-        proxy = ByeDpiProxy()
         val preferences = getByeDpiPreferences()
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
-            val code = proxy?.startProxy(preferences)
+            val code = proxy.startProxy(preferences)
 
             withContext(Dispatchers.Main) {
                 if (code != 0) {
@@ -176,12 +172,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
         if (status == ServiceStatus.DISCONNECTED) {
             Log.w(TAG, "Proxy already disconnected")
             return
-        } else {
-            proxy?.stopProxy() ?: throw IllegalStateException("Proxy field null")
-            proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
-            proxy = null
-            proxyJob = null
         }
+
+        proxy.stopProxy()
+        proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
+        proxyJob = null
 
         Log.i(TAG, "Proxy stopped")
     }

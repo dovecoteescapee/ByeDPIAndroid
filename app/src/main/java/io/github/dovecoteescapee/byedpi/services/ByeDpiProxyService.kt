@@ -24,11 +24,14 @@ import io.github.dovecoteescapee.byedpi.utility.registerNotificationChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class ByeDpiProxyService : LifecycleService() {
-    private var proxy: ByeDpiProxy? = null
+    private var proxy = ByeDpiProxy()
     private var proxyJob: Job? = null
+    private val mutex = Mutex()
 
     companion object {
         private val TAG: String = ByeDpiProxyService::class.java.simpleName
@@ -77,7 +80,9 @@ class ByeDpiProxyService : LifecycleService() {
         }
 
         try {
-            startProxy()
+            mutex.withLock {
+                startProxy()
+            }
             updateStatus(ServiceStatus.CONNECTED)
             startForeground()
         } catch (e: Exception) {
@@ -103,7 +108,9 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun stop() {
         Log.i(TAG, "Stopping VPN")
 
-        stopProxy()
+        mutex.withLock {
+            stopProxy()
+        }
         updateStatus(ServiceStatus.DISCONNECTED)
         stopSelf()
     }
@@ -111,7 +118,7 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun startProxy() {
         Log.i(TAG, "Starting proxy")
 
-        if (proxy != null || proxyJob != null) {
+        if (proxyJob != null) {
             Log.w(TAG, "Proxy fields not null")
             throw IllegalStateException("Proxy fields not null")
         }
@@ -120,7 +127,7 @@ class ByeDpiProxyService : LifecycleService() {
         val preferences = getByeDpiPreferences()
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
-            val code = proxy?.startProxy(preferences)
+            val code = proxy.startProxy(preferences)
 
             withContext(Dispatchers.Main) {
                 if (code != 0) {
@@ -141,12 +148,11 @@ class ByeDpiProxyService : LifecycleService() {
         if (status == ServiceStatus.DISCONNECTED) {
             Log.w(TAG, "Proxy already disconnected")
             return
-        } else {
-            proxy?.stopProxy()
-            proxyJob?.join()
-            proxy = null
-            proxyJob = null
         }
+
+        proxy.stopProxy()
+        proxyJob?.join()
+        proxyJob = null
 
         Log.i(TAG, "Proxy stopped")
     }

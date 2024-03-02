@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <netdb.h>
-#include <sys/eventfd.h>
 
 #include <jni.h>
 #include <android/log.h>
@@ -17,24 +16,15 @@ const enum demode DESYNC_METHODS[] = {
         DESYNC_FAKE
 };
 
+extern int NOT_EXIT;
 extern struct packet fake_tls, fake_http;
 extern int get_default_ttl();
 extern int get_addr(const char *str, struct sockaddr_ina *addr);
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniEventFd(JNIEnv *env, jobject thiz) {
-    int fd = eventfd(0, EFD_NONBLOCK);
-    if (fd < 0) {
-        return -1;
-    }
-    return fd;
-}
-
-JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         JNIEnv *env,
         jobject thiz,
-        jint event_fd,
         jstring ip,
         jint port,
         jint max_connections,
@@ -87,22 +77,33 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
         }
     }
 
-    int res = listener(event_fd, s);
-
-    if (close(event_fd) < 0) {
-        uniperror("close");
+    int fd = listen_socket(&s);
+    if (fd < 0) {
+        uniperror("listen_socket");
+        return get_e();
     }
 
-    return res < 0 ? get_e() : 0;
+    LOG(LOG_S, "listen_socket, fd: %d", fd);
+    return fd;
+}
+
+JNIEXPORT jint JNICALL
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, jobject thiz,
+                                                                     jint fd) {
+    LOG(LOG_S, "start_proxy, fd: %d", fd);
+    NOT_EXIT = 1;
+    if (event_loop(fd) < 0) {
+        return get_e();
+    }
+    return 0;
 }
 
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(JNIEnv *env, jobject thiz,
-                                                                      jint event_fd) {
-    if (eventfd_write(event_fd, 1) < 0) {
-        uniperror("eventfd_write");
-        LOG(LOG_S, "event_fd: %d", event_fd);
+                                                                    jint fd) {
+    LOG(LOG_S, "stop_proxy, fd: %d", fd);
+    if (shutdown(fd, SHUT_RDWR) < 0) {
+        return get_e();
     }
-
     return 0;
 }

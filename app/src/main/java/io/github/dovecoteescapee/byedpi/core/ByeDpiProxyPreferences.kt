@@ -41,25 +41,23 @@ class ByeDpiProxyPreferences(
 
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
-        port = preferences.getString("byedpi_proxy_port", null)?.toInt(),
-        maxConnections = preferences.getString("byedpi_max_connections", null)?.toInt(),
-        bufferSize = preferences.getString("byedpi_buffer_size", null)?.toInt(),
-        defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toInt(),
+        port = preferences.getString("byedpi_proxy_port", null)?.toIntOrNull(),
+        maxConnections = preferences.getString("byedpi_max_connections", null)?.toIntOrNull(),
+        bufferSize = preferences.getString("byedpi_buffer_size", null)?.toIntOrNull(),
+        defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toIntOrNull(),
         noDomain = preferences.getBoolean("byedpi_no_domain", false),
         desyncKnown = preferences.getBoolean("byedpi_desync_known", false),
         desyncMethod = preferences.getString("byedpi_desync_method", null)
             ?.let { DesyncMethod.fromName(it) },
-        splitPosition = preferences.getString("byedpi_split_position", null)?.toInt(),
+        splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),
         splitAtHost = preferences.getBoolean("byedpi_split_at_host", false),
-        fakeTtl = preferences.getString("byedpi_fake_ttl", null)?.toInt(),
+        fakeTtl = preferences.getString("byedpi_fake_ttl", null)?.toIntOrNull(),
         hostMixedCase = preferences.getBoolean("byedpi_host_mixed_case", false),
         domainMixedCase = preferences.getBoolean("byedpi_domain_mixed_case", false),
         hostRemoveSpaces = preferences.getBoolean("byedpi_host_remove_spaces", false),
         tlsRecordSplit = preferences.getBoolean("byedpi_tlsrec_enabled", false),
-        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)?.toInt(),
+        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)?.toIntOrNull(),
         tlsRecordSplitAtSni = preferences.getBoolean("byedpi_tlsrec_at_sni", false),
-
-
         )
 
     enum class DesyncMethod {
