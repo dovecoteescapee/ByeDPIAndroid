@@ -1,5 +1,6 @@
 package io.github.dovecoteescapee.byedpi.activities
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -28,6 +29,7 @@ import io.github.dovecoteescapee.byedpi.fragments.SettingsFragment
 import io.github.dovecoteescapee.byedpi.databinding.ActivityMainBinding
 import io.github.dovecoteescapee.byedpi.services.ByeDpiProxyService
 import io.github.dovecoteescapee.byedpi.services.ByeDpiVpnService
+import io.github.dovecoteescapee.byedpi.services.appStatus
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
 import kotlinx.coroutines.Dispatchers
@@ -39,9 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val TAG: String = MainActivity::class.java.simpleName
-
-        private var status: AppStatus = AppStatus.Halted
-        private var mode: Mode = Mode.VPN
 
         private fun collectLogs(): String? =
             try {
@@ -61,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                 startVpn()
             } else {
                 Toast.makeText(this, R.string.vpn_permission_denied, Toast.LENGTH_SHORT).show()
-                updateStatus(AppStatus.Halted)
+                updateStatus()
             }
         }
 
@@ -111,22 +110,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             when (val action = intent.action) {
-                STARTED_BROADCAST -> if (
-                    status == AppStatus.Halted || status == AppStatus.Starting
-                ) {
-                    updateStatus(AppStatus.Running, Mode.fromSender(sender))
-                } else {
-                    Log.w(TAG, "Received STARTED while status is $status")
-                }
-
-                STOPPED_BROADCAST -> if (
-                    mode == Mode.fromSender(sender) &&
-                    (status == AppStatus.Running || status == AppStatus.Stopping)
-                ) {
-                    updateStatus(AppStatus.Halted)
-                } else {
-                    Log.w(TAG, "Received STOPPED $sender while status is $status")
-                }
+                STARTED_BROADCAST,
+                STOPPED_BROADCAST -> updateStatus()
 
                 FAILED_BROADCAST -> {
                     Toast.makeText(
@@ -134,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.failed_to_start, sender.name),
                         Toast.LENGTH_SHORT,
                     ).show()
-                    updateStatus(AppStatus.Halted)
+                    updateStatus()
                 }
 
                 else -> Log.w(TAG, "Unknown action: $action")
@@ -154,6 +139,7 @@ class MainActivity : AppCompatActivity() {
             addAction(FAILED_BROADCAST)
         }
 
+        @SuppressLint("UnspecifiedRegisterReceiverFlag")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
         } else {
@@ -161,12 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.statusButton.setOnClickListener {
+            val (status, _) = appStatus
             when (status) {
                 AppStatus.Halted -> start()
                 AppStatus.Running -> stop()
-                else -> {
-                    // ignore
-                }
             }
         }
 
@@ -190,8 +174,10 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val (status, _) = appStatus
+
+        return when (item.itemId) {
             R.id.action_settings -> {
                 if (status == AppStatus.Halted) {
                     val intent = Intent(this, SettingsActivity::class.java)
@@ -217,14 +203,11 @@ class MainActivity : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
 
     private fun start() {
-//        Starting and stopping is too fast
-//        updateStatus(AppStatus.Starting)
-
-        val preferences = getPreferences(this)
-        when (val mode = preferences.getString("byedpi_mode", null) ?: "vpn") {
-            "vpn" -> {
+        when (getPreferences(this).mode()) {
+            Mode.VPN -> {
                 val intentPrepare = VpnService.prepare(this)
                 if (intentPrepare != null) {
                     vpnRegister.launch(intentPrepare)
@@ -233,8 +216,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            "proxy" -> startProxy()
-            else -> Log.e(TAG, "Unknown mode: $mode")
+            Mode.Proxy -> startProxy()
         }
     }
 
@@ -253,8 +235,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stop() {
-//        Starting and stopping is too fast
-//        updateStatus(AppStatus.Stopping)
+        val (_, mode) = appStatus
         when (mode) {
             Mode.VPN -> stopVpn()
             Mode.Proxy -> stopProxy()
@@ -275,13 +256,10 @@ class MainActivity : AppCompatActivity() {
         startService(intent)
     }
 
-    private fun updateStatus(
-        status: AppStatus = MainActivity.status,
-        mode: Mode = MainActivity.mode,
-    ) {
-        Log.i(TAG, "Updating from ${MainActivity.status} to $status")
+    private fun updateStatus() {
+        val (status, mode) = appStatus
 
-        MainActivity.mode = mode
+        Log.i(TAG, "Updating status: $status, $mode")
 
         val preferences = getPreferences(this)
         val proxyIp = preferences.getString("byedpi_proxy_ip", null) ?: "127.0.0.1"
@@ -290,9 +268,7 @@ class MainActivity : AppCompatActivity() {
 
         when (status) {
             AppStatus.Halted -> {
-                val newMode = preferences.mode()
-                MainActivity.mode = newMode
-                when (newMode) {
+                when (preferences.mode()) {
                     Mode.VPN -> {
                         binding.statusText.setText(R.string.vpn_disconnected)
                         binding.statusButton.setText(R.string.vpn_connect)
@@ -303,7 +279,6 @@ class MainActivity : AppCompatActivity() {
                         binding.statusButton.setText(R.string.proxy_start)
                     }
                 }
-                MainActivity.status = AppStatus.Halted
                 binding.statusButton.isEnabled = true
             }
 
@@ -319,40 +294,7 @@ class MainActivity : AppCompatActivity() {
                         binding.statusButton.setText(R.string.proxy_stop)
                     }
                 }
-                MainActivity.status = AppStatus.Running
                 binding.statusButton.isEnabled = true
-            }
-
-            AppStatus.Starting -> {
-                if (MainActivity.status == AppStatus.Halted) {
-                    when (mode) {
-                        Mode.VPN -> {
-                            binding.statusText.setText(R.string.vpn_connecting)
-                        }
-
-                        Mode.Proxy -> {
-                            binding.statusText.setText(R.string.proxy_starting)
-                        }
-                    }
-                    MainActivity.status = AppStatus.Starting
-                    binding.statusButton.isEnabled = false
-                }
-            }
-
-            AppStatus.Stopping -> {
-                if (MainActivity.status == AppStatus.Running) {
-                    when (mode) {
-                        Mode.VPN -> {
-                            binding.statusText.setText(R.string.vpn_disconnecting)
-                        }
-
-                        Mode.Proxy -> {
-                            binding.statusText.setText(R.string.proxy_stopping)
-                        }
-                    }
-                    MainActivity.status = AppStatus.Stopping
-                    binding.statusButton.isEnabled = false
-                }
             }
         }
     }

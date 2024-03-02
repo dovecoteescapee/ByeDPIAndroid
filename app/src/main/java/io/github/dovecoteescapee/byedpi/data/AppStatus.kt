@@ -3,8 +3,6 @@ package io.github.dovecoteescapee.byedpi.data
 enum class AppStatus {
     Halted,
     Running,
-    Starting,
-    Stopping,
 }
 
 enum class Mode {

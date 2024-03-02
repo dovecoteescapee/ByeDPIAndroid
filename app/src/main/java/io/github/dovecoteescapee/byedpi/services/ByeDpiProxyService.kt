@@ -10,9 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxy
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyPreferences
+import io.github.dovecoteescapee.byedpi.data.AppStatus
 import io.github.dovecoteescapee.byedpi.data.START_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
 import io.github.dovecoteescapee.byedpi.data.FAILED_BROADCAST
+import io.github.dovecoteescapee.byedpi.data.Mode
 import io.github.dovecoteescapee.byedpi.data.SENDER
 import io.github.dovecoteescapee.byedpi.data.STARTED_BROADCAST
 import io.github.dovecoteescapee.byedpi.data.STOPPED_BROADCAST
@@ -39,7 +41,7 @@ class ByeDpiProxyService : LifecycleService() {
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPI Proxy"
 
         @Volatile
-        private var status: ServiceStatus = ServiceStatus.DISCONNECTED
+        private var status: ServiceStatus = ServiceStatus.Disconnected
     }
 
     override fun onCreate() {
@@ -74,7 +76,7 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun start() {
         Log.i(TAG, "Starting")
 
-        if (status == ServiceStatus.CONNECTED) {
+        if (status == ServiceStatus.Connected) {
             Log.w(TAG, "Proxy already connected")
             return
         }
@@ -83,11 +85,11 @@ class ByeDpiProxyService : LifecycleService() {
             mutex.withLock {
                 startProxy()
             }
-            updateStatus(ServiceStatus.CONNECTED)
+            updateStatus(ServiceStatus.Connected)
             startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start proxy", e)
-            updateStatus(ServiceStatus.FAILED)
+            updateStatus(ServiceStatus.Failed)
             stop()
         }
     }
@@ -111,7 +113,7 @@ class ByeDpiProxyService : LifecycleService() {
         mutex.withLock {
             stopProxy()
         }
-        updateStatus(ServiceStatus.DISCONNECTED)
+        updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 
@@ -132,9 +134,9 @@ class ByeDpiProxyService : LifecycleService() {
             withContext(Dispatchers.Main) {
                 if (code != 0) {
                     Log.e(TAG, "Proxy stopped with code $code")
-                    updateStatus(ServiceStatus.FAILED)
+                    updateStatus(ServiceStatus.Failed)
                 } else {
-                    updateStatus(ServiceStatus.DISCONNECTED)
+                    updateStatus(ServiceStatus.Disconnected)
                 }
             }
         }
@@ -145,7 +147,7 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun stopProxy() {
         Log.i(TAG, "Stopping proxy")
 
-        if (status == ServiceStatus.DISCONNECTED) {
+        if (status == ServiceStatus.Disconnected) {
             Log.w(TAG, "Proxy already disconnected")
             return
         }
@@ -164,11 +166,21 @@ class ByeDpiProxyService : LifecycleService() {
         Log.d(TAG, "Proxy status changed from $status to $newStatus")
 
         status = newStatus
+
+        setStatus(
+            when (newStatus) {
+                ServiceStatus.Connected -> AppStatus.Running
+                ServiceStatus.Disconnected,
+                ServiceStatus.Failed -> AppStatus.Halted
+            },
+            Mode.Proxy
+        )
+
         val intent = Intent(
             when (newStatus) {
-                ServiceStatus.CONNECTED -> STARTED_BROADCAST
-                ServiceStatus.DISCONNECTED -> STOPPED_BROADCAST
-                ServiceStatus.FAILED -> FAILED_BROADCAST
+                ServiceStatus.Connected -> STARTED_BROADCAST
+                ServiceStatus.Disconnected -> STOPPED_BROADCAST
+                ServiceStatus.Failed -> FAILED_BROADCAST
             }
         )
         intent.putExtra(SENDER, Sender.Proxy.ordinal)
