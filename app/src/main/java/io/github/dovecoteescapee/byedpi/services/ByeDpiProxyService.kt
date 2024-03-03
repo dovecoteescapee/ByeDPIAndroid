@@ -40,7 +40,6 @@ class ByeDpiProxyService : LifecycleService() {
         private const val FOREGROUND_SERVICE_ID: Int = 2
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPI Proxy"
 
-        @Volatile
         private var status: ServiceStatus = ServiceStatus.Disconnected
     }
 

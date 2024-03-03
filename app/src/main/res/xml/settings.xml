@@ -118,7 +118,7 @@
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_fake_sni"
             android:title="SNI of fake packet"
-            android:defaultValue="www.w3c.org"
+            android:defaultValue="www.iana.org"
             app:useSimpleSummaryProvider="true" />
 
         <com.takisoft.preferencex.EditTextPreference

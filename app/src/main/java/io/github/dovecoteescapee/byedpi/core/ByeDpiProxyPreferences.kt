@@ -34,7 +34,7 @@ class ByeDpiProxyPreferences(
     val splitPosition: Int = splitPosition ?: 3
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
-    val fakeSni: String = fakeSni ?: "www.w3c.org"
+    val fakeSni: String = fakeSni ?: "www.iana.org"
     val oobData: String = oobData ?: "a"
     val hostMixedCase: Boolean = hostMixedCase ?: false
     val domainMixedCase: Boolean = domainMixedCase ?: false

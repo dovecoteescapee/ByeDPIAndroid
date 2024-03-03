@@ -47,7 +47,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
         private const val FOREGROUND_SERVICE_ID: Int = 1
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPIVpn"
 
-        @Volatile
         private var status: ServiceStatus = ServiceStatus.Disconnected
     }
 

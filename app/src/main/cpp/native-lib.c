@@ -23,16 +23,15 @@ extern int get_default_ttl();
 
 extern int get_addr(const char *str, struct sockaddr_ina *addr);
 
-JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_00024Companion_jniInit(JNIEnv *env, jobject thiz) {
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, __attribute__((unused)) void *reserved) {
     oob_data.data = NULL;
-    return 0;
+    return JNI_VERSION_1_6;
 }
 
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         JNIEnv *env,
-        jobject thiz,
+        __attribute__((unused)) jobject thiz,
         jstring ip,
         jint port,
         jint max_connections,
@@ -128,8 +127,10 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, jobject thiz,
-                                                                     jint fd) {
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
+        __attribute__((unused)) JNIEnv *env,
+        __attribute__((unused)) jobject thiz,
+        jint fd) {
     LOG(LOG_S, "start_proxy, fd: %d", fd);
     NOT_EXIT = 1;
     if (event_loop(fd) < 0) {
@@ -139,8 +140,10 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(JNIEnv *env, jobject thiz,
-                                                                    jint fd) {
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
+        __attribute__((unused)) JNIEnv *env,
+        __attribute__((unused)) jobject thiz,
+        jint fd) {
     LOG(LOG_S, "stop_proxy, fd: %d", fd);
     if (shutdown(fd, SHUT_RDWR) < 0) {
         return get_e();

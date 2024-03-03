@@ -8,10 +8,7 @@ class ByeDpiProxy {
     companion object {
         init {
             System.loadLibrary("byedpi")
-            jniInit()
         }
-
-        private external fun jniInit(): Int
     }
 
     private val mutex = Mutex()
