@@ -12,17 +12,27 @@ Android application that runs a local VPN service to bypass DPI (Deep Packet Ins
 
 The application locally runs [ByeDPI](https://github.com/hufrea/byedpi) and redirects all TCP traffic through it.
 
-## Quick Start
+## Installation
 
-1. Download the .apk file from the [releases](https://github.com/dovecoteescapee/ByeDPIAndroid/releases/latest)
-2. Install
-3. Run and press Connect
+[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
+    alt="Get it on GitHub"
+    height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
+
+### Or use Obtainium
+
+1. Install [Obtainium](https://github.com/ImranR98/Obtainium?tab=readme-ov-file#installation)
+2. Add the app by URL:  
+   `https://github.com/dovecoteescapee/ByeDPIAndroid`
 
 ## Settings
 
 To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi#readme-ov-file).
 
 ## FAQ
+
+### How to get updates?
+
+Use [Obtainium](#or-use-obtainium).
 
 ### Is this a VPN?
 

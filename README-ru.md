@@ -12,17 +12,27 @@
 
 Приложение локально запускает [ByeDPI](https://github.com/hufrea/byedpi) и перенаправляет весь TCP трафик через него.
 
-## Как использовать?
+## Установка
 
-1. Скачать .apk файл из [релизов](https://github.com/dovecoteescapee/ByeDPIAndroid/releases/latest)
-2. Установить
-3. Запустить и нажать Connect 
+[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
+    alt="Скачать с GitHub"
+    height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
+
+### Или используйте Obtainium
+
+1. Установите [Obtainium](https://github.com/ImranR98/Obtainium?tab=readme-ov-file#installation)
+2. Добавьте приложение по URL:  
+   `https://github.com/dovecoteescapee/ByeDPIAndroid`
 
 ## Настройки
 
 Для обхода некоторых блокировок может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi#readme-ov-file).
 
 ## FAQ
+
+### Как получать обновления?
+
+Используйте [Obtainium](#или-используйте-obtainium).
 
 ### Это VPN?
 
