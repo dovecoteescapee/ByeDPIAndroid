@@ -15,8 +15,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.github.dovecoteescapee.byedpi.data.START_ACTION
-import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.AppStatus
 import io.github.dovecoteescapee.byedpi.data.FAILED_BROADCAST
@@ -27,8 +25,7 @@ import io.github.dovecoteescapee.byedpi.data.STOPPED_BROADCAST
 import io.github.dovecoteescapee.byedpi.data.Sender
 import io.github.dovecoteescapee.byedpi.fragments.SettingsFragment
 import io.github.dovecoteescapee.byedpi.databinding.ActivityMainBinding
-import io.github.dovecoteescapee.byedpi.services.ByeDpiProxyService
-import io.github.dovecoteescapee.byedpi.services.ByeDpiVpnService
+import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.services.appStatus
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
@@ -57,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     private val vpnRegister =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-                startVpn()
+                ServiceManager.start(this, Mode.VPN)
             } else {
                 Toast.makeText(this, R.string.vpn_permission_denied, Toast.LENGTH_SHORT).show()
                 updateStatus()
@@ -212,48 +209,16 @@ class MainActivity : AppCompatActivity() {
                 if (intentPrepare != null) {
                     vpnRegister.launch(intentPrepare)
                 } else {
-                    startVpn()
+                    ServiceManager.start(this, Mode.VPN)
                 }
             }
 
-            Mode.Proxy -> startProxy()
+            Mode.Proxy -> ServiceManager.start(this, Mode.Proxy)
         }
-    }
-
-    private fun startVpn() {
-        Log.i(TAG, "Starting VPN")
-        val intent = Intent(this, ByeDpiVpnService::class.java)
-        intent.action = START_ACTION
-        startService(intent)
-    }
-
-    private fun startProxy() {
-        Log.i(TAG, "Starting proxy")
-        val intent = Intent(this, ByeDpiProxyService::class.java)
-        intent.action = START_ACTION
-        startService(intent)
     }
 
     private fun stop() {
-        val (_, mode) = appStatus
-        when (mode) {
-            Mode.VPN -> stopVpn()
-            Mode.Proxy -> stopProxy()
-        }
-    }
-
-    private fun stopVpn() {
-        Log.i(TAG, "Stopping VPN")
-        val intent = Intent(this, ByeDpiVpnService::class.java)
-        intent.action = STOP_ACTION
-        startService(intent)
-    }
-
-    private fun stopProxy() {
-        Log.i(TAG, "Stopping proxy")
-        val intent = Intent(this, ByeDpiProxyService::class.java)
-        intent.action = STOP_ACTION
-        startService(intent)
+        ServiceManager.stop(this)
     }
 
     private fun updateStatus() {
