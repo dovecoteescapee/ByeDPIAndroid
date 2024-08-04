@@ -56,4 +56,22 @@ DPI (Deep Packet Inspection) - это технология для анализа
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*  
-  *форк с добавление раздельного тунелирования TCP и UDP
+  *форк с добавлением раздельного тунелирования TCP и UDP
+
+## Сборка
+
+Для сборки приложения требуется:
+
+1. JDK 8 или новее
+2. Android SDK
+3. Android NDK
+4. Go 1.22 или новее
+5. CMake 3.22.1 или новее
+
+Сборка приложения:
+
+1. Клонируйте репозиторий с подмодулями:  
+   `git clone --recurse-submodules`
+2. Запустите скрипт сборки из корня репозитория:  
+   `./gradlew assembleRelease`
+3. APK будет лежать в `app/build/outputs/apk/release/`

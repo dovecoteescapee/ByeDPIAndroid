@@ -57,3 +57,21 @@ DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*  
   *fork with the addition of separate tunneling of TCP and UDP
+
+## Building
+
+For building the application, you need:
+
+1. JDK 8 or later
+2. Android SDK
+3. Android NDK
+4. Go 1.22 or later
+5. CMake 3.22.1 or later
+
+To build the application:
+
+1. Clone the repository with submodules:  
+   `git clone --recurse-submodules`
+2. Run the build script from the root of the repository:  
+   `./gradlew assembleRelease`
+3. The APK will be in `app/build/outputs/apk/release/`
