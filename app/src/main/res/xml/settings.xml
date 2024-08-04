@@ -106,7 +106,7 @@
         <CheckBoxPreference
             android:key="byedpi_split_at_host"
             android:title="@string/byedpi_split_at_host_setting"
-            android:defaultValue="0"/>
+            android:defaultValue="false" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_fake_ttl"
