@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("com.android.application")
@@ -129,17 +129,15 @@ abstract class BuildTun2Socks : BaseTun2SocksTask() {
     }
 }
 
-tasks.register<GetGomobileBind>("getGomobileBind") {
+val getGomobileBind = tasks.register<GetGomobileBind>("getGomobileBind") {
     group = "build"
     description = "Get gomobile bind for compiling tun2socks"
 }
 
-tasks.register<BuildTun2Socks>("buildTun2Socks") {
+val buildTun2Socks = tasks.register<BuildTun2Socks>("buildTun2Socks") {
     group = "build"
     description = "Build tun2socks for Android"
-    dependsOn("getGomobileBind")
+    dependsOn(getGomobileBind)
 }
 
-tasks.withType(KotlinCompile::class).configureEach {
-    dependsOn("buildTun2Socks")
-}
+tasks.preBuild.dependsOn(buildTun2Socks)
