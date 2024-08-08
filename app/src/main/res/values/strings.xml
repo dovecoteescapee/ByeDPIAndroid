@@ -8,10 +8,6 @@
     <string name="proxy_down">Proxy is down</string>
     <string name="proxy_start">Start</string>
     <string name="proxy_stop">Stop</string>
-    <string name="vpn_connecting">Connecting…</string>
-    <string name="vpn_disconnecting">Disconnecting…</string>
-    <string name="proxy_starting">Starting</string>
-    <string name="proxy_stopping">Stopping</string>
     <string name="settings">Settings</string>
     <string name="vpn_permission_denied">VPN permission denied</string>
     <string name="settings_unavailable">Please stop the VPN service before changing settings</string>
@@ -29,7 +25,6 @@
     <string name="byedpi_buffer_size_setting">Buffer size</string>
     <string name="byedpi_default_ttl_setting">Default TTL</string>
     <string name="byedpi_no_domain_setting">No domain</string>
-    <string name="byedpi_desync_known_setting">Desync only HTTPS and TLS</string>
     <string name="byedpi_desync_method_setting">Desync method</string>
     <string name="byedpi_split_position_setting">Split position</string>
     <string name="byedpi_split_at_host_setting">Split at host</string>

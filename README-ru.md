@@ -2,8 +2,8 @@
 
 [English](README.md) | **Русский**
 
-<div align="center">
-<img src=".github/images/logo.svg" height="200px" width="200px" />
+<div style="text-align: center;">
+  <img src=".github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
@@ -55,8 +55,7 @@ DPI (Deep Packet Inspection) - это технология для анализа
 ## Зависимости
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
-- [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*  
-  *форк с добавлением раздельного тунелирования TCP и UDP
+- [Tun2Socks](https://github.com/xjasonlyu/tun2socks)
 
 ## Сборка
 
@@ -70,8 +69,17 @@ DPI (Deep Packet Inspection) - это технология для анализа
 
 Сборка приложения:
 
-1. Клонируйте репозиторий с подмодулями:  
-   `git clone --recurse-submodules`
-2. Запустите скрипт сборки из корня репозитория:  
-   `./gradlew assembleRelease`
-3. APK будет лежать в `app/build/outputs/apk/release/`
+1. Установите gomobile:
+   ```bash
+   go install golang.org/x/mobile/cmd/gomobile@latest
+   gomobile init
+   ```
+2. Клонируйте репозиторий с подмодулями:
+   ```bash 
+   git clone --recurse-submodules
+   ```
+3. Запустите скрипт сборки из корня репозитория:
+   ```bash
+   ./gradlew assembleRelease`
+   ```
+4. APK будет лежать в `app/build/outputs/apk/release/`
