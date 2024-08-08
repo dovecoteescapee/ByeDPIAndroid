@@ -191,7 +191,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         val sharedPreferences = getPreferences(this)
         val port = sharedPreferences.getString("byedpi_proxy_port", null)?.toInt() ?: 1080
-        val dns = sharedPreferences.getString("dns_ip", null) ?: "9.9.9.9"
+        val dns = sharedPreferences.getString("dns_ip", null) ?: "1.1.1.1"
 
         val vpn = createBuilder(dns).establish()
             ?: throw IllegalStateException("VPN connection failed")

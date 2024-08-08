@@ -10,7 +10,7 @@
 
 Android application that runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship.
 
-The application locally runs [ByeDPI](https://github.com/hufrea/byedpi) and redirects all TCP traffic through it.
+The application locally runs [ByeDPI](https://github.com/hufrea/byedpi) and redirects all traffic through it.
 
 ## Installation
 
