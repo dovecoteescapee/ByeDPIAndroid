@@ -170,7 +170,10 @@ class ByeDpiProxyService : LifecycleService() {
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
                 ServiceStatus.Disconnected,
-                ServiceStatus.Failed -> AppStatus.Halted
+                ServiceStatus.Failed -> {
+                    proxyJob = null
+                    AppStatus.Halted
+                }
             },
             Mode.Proxy
         )

@@ -9,7 +9,6 @@ class ByeDpiProxyPreferences(
     bufferSize: Int? = null,
     defaultTtl: Int? = null,
     noDomain: Boolean? = null,
-    desyncKnown: Boolean? = null,
     desyncMethod: DesyncMethod? = null,
     splitPosition: Int? = null,
     splitAtHost: Boolean? = null,
@@ -28,8 +27,8 @@ class ByeDpiProxyPreferences(
     val maxConnections: Int = maxConnections ?: 512
     val bufferSize: Int = bufferSize ?: 16384
     val defaultTtl: Int = defaultTtl ?: 0
+    val customTtl: Boolean = defaultTtl != null
     val noDomain: Boolean = noDomain ?: false
-    val desyncKnown: Boolean = desyncKnown ?: false
     val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
     val splitPosition: Int = splitPosition ?: 3
     val splitAtHost: Boolean = splitAtHost ?: false
@@ -50,7 +49,6 @@ class ByeDpiProxyPreferences(
         bufferSize = preferences.getString("byedpi_buffer_size", null)?.toIntOrNull(),
         defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toIntOrNull(),
         noDomain = preferences.getBoolean("byedpi_no_domain", false),
-        desyncKnown = preferences.getBoolean("byedpi_desync_known", false),
         desyncMethod = preferences.getString("byedpi_desync_method", null)
             ?.let { DesyncMethod.fromName(it) },
         splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),

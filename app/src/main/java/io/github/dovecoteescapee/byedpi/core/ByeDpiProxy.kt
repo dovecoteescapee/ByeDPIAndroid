@@ -2,7 +2,6 @@ package io.github.dovecoteescapee.byedpi.core
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.io.IOException
 
 class ByeDpiProxy {
     companion object {
@@ -14,8 +13,13 @@ class ByeDpiProxy {
     private val mutex = Mutex()
     private var fd = -1
 
-    suspend fun startProxy(preferences: ByeDpiProxyPreferences): Int =
-        jniStartProxy(createSocket(preferences))
+    suspend fun startProxy(preferences: ByeDpiProxyPreferences): Int {
+        val fd = createSocket(preferences)
+        if (fd < 0) {
+            return -1 // TODO: should be error code
+        }
+        return jniStartProxy(fd)
+    }
 
     suspend fun stopProxy(): Int {
         mutex.withLock {
@@ -43,8 +47,8 @@ class ByeDpiProxy {
                 maxConnections = preferences.maxConnections,
                 bufferSize = preferences.bufferSize,
                 defaultTtl = preferences.defaultTtl,
+                customTtl = preferences.customTtl,
                 noDomain = preferences.noDomain,
-                desyncKnown = preferences.desyncKnown,
                 desyncMethod = preferences.desyncMethod.ordinal,
                 splitPosition = preferences.splitPosition,
                 splitAtHost = preferences.splitAtHost,
@@ -60,7 +64,7 @@ class ByeDpiProxy {
             )
 
             if (fd < 0) {
-                throw IOException("Failed to create socket")
+                return -1
             }
 
             this.fd = fd
@@ -73,8 +77,8 @@ class ByeDpiProxy {
         maxConnections: Int,
         bufferSize: Int,
         defaultTtl: Int,
+        customTtl: Boolean,
         noDomain: Boolean,
-        desyncKnown: Boolean,
         desyncMethod: Int,
         splitPosition: Int,
         splitAtHost: Boolean,

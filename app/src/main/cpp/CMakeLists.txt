@@ -28,10 +28,13 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         byedpi/conev.c
         byedpi/desync.c
+        byedpi/extend.c
         byedpi/packets.c
         byedpi/proxy.c
         byedpi/main.c
+        byedpi/mpool.c
         native-lib.c
+        utils.c
         )
 
 include_directories("byedpi")
@@ -46,4 +49,5 @@ add_compile_definitions(ANDROID_APP)
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
-        log)
+        log
+        )

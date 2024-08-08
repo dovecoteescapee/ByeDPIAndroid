@@ -83,11 +83,6 @@
             android:title="@string/byedpi_no_domain_setting"
             android:defaultValue="false"/>
 
-        <CheckBoxPreference
-            android:key="byedpi_desync_known"
-            android:title="@string/byedpi_desync_known_setting"
-            android:defaultValue="false"/>
-
         <DropDownPreference
             android:key="byedpi_desync_method"
             android:title="@string/byedpi_desync_method_setting"

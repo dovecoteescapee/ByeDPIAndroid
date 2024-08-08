@@ -2,8 +2,8 @@
 
 **English** | [Русский](README-ru.md)
 
-<div align="center">
-<img src=".github/images/logo.svg" height="200px" width="200px" />
+<div style="text-align: center;">
+  <img src=".github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
@@ -55,8 +55,7 @@ DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic
 ## Dependencies
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
-- [Tun2Socks](https://github.com/dovecoteescapee/tun2socks)*  
-  *fork with the addition of separate tunneling of TCP and UDP
+- [Tun2Socks](https://github.com/xjasonlyu/tun2socks)
 
 ## Building
 
@@ -70,8 +69,17 @@ For building the application, you need:
 
 To build the application:
 
-1. Clone the repository with submodules:  
-   `git clone --recurse-submodules`
-2. Run the build script from the root of the repository:  
-   `./gradlew assembleRelease`
-3. The APK will be in `app/build/outputs/apk/release/`
+1. Install gomobile:
+   ```bash
+   go install golang.org/x/mobile/cmd/gomobile@latest
+   gomobile init
+   ```
+2. Clone the repository with submodules:
+   ```bash
+   git clone --recurse-submodules
+   ```
+3. Run the build script from the root of the repository:
+   ```bash
+   ./gradlew assembleRelease
+   ```
+4. The APK will be in `app/build/outputs/apk/release/`

@@ -224,7 +224,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
                 ServiceStatus.Disconnected,
-                ServiceStatus.Failed -> AppStatus.Halted
+                ServiceStatus.Failed -> {
+                    proxyJob = null
+                    AppStatus.Halted
+                }
             },
             Mode.VPN
         )
@@ -281,8 +284,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         setInterface("")
         logLevel = if (BuildConfig.DEBUG) "debug" else "info"
-        udpProxy = "direct://"
-        tcpProxy = "socks5://127.0.0.1:$port"
+        proxy = "socks5://127.0.0.1:$port"
 
         restAPI = ""
         tcpSendBufferSize = ""

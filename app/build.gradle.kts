@@ -69,26 +69,75 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-abstract class BuildTun2Socks : DefaultTask() {
-    @TaskAction
-    fun buildTun2Socks() {
-        val projectDir = project.projectDir
-        val tun2socksDir = projectDir.resolve("libs/tun2socks")
-        val tun2socksOutput = projectDir.resolve("libs/tun2socks.aar")
+abstract class BaseTun2SocksTask : DefaultTask() {
+    @get:InputDirectory
+    val tun2socksDir: File
+        get() = project.file("libs/tun2socks")
 
+    @get:OutputFile
+    val tun2socksOutput: File
+        get() = project.file("libs/tun2socks.aar")
+
+    @Internal
+    protected fun isUpToDate(): Boolean {
         if (tun2socksOutput.exists()) {
+            val lastModified = tun2socksOutput.lastModified()
+            return !tun2socksDir.walkTopDown().any {
+                it.isFile && it.lastModified() > lastModified
+            }
+        }
+        return false
+    }
+}
+
+abstract class GetGomobileBind : BaseTun2SocksTask() {
+    @TaskAction
+    fun getBind() {
+        if (isUpToDate()) {
+            logger.lifecycle("No changes detected, skipping getBind.")
             return
         }
+
         project.exec {
             workingDir = tun2socksDir
-            commandLine("gomobile", "bind", "-o", tun2socksOutput, "-trimpath", "./engine")
+
+            commandLine("go", "get", "golang.org/x/mobile/bind")
         }
     }
 }
 
+abstract class BuildTun2Socks : BaseTun2SocksTask() {
+    @TaskAction
+    fun buildTun2Socks() {
+        if (isUpToDate()) {
+            logger.lifecycle("No changes detected, skipping buildTun2Socks.")
+            return
+        }
+
+        project.exec {
+            workingDir = tun2socksDir
+
+            commandLine(
+                "gomobile", "bind",
+                "-target", "android",
+                "-androidapi", "21",
+                "-o", tun2socksOutput,
+                "-trimpath",
+                "./engine"
+            )
+        }
+    }
+}
+
+tasks.register<GetGomobileBind>("getGomobileBind") {
+    group = "build"
+    description = "Get gomobile bind for compiling tun2socks"
+}
+
 tasks.register<BuildTun2Socks>("buildTun2Socks") {
     group = "build"
-    description = "Build tun2socks"
+    description = "Build tun2socks for Android"
+    dependsOn("getGomobileBind")
 }
 
 tasks.withType(KotlinCompile::class).configureEach {
