@@ -30,6 +30,14 @@ To bypass some blocks, you may need to change the settings. More about the vario
 
 ## FAQ
 
+### Is this a virus?
+
+No. [Discussion of the problem](https://github.com/dovecoteescapee/ByeDPIAndroid/issues/61).
+
+### I can't configure it. What to do?
+
+You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
+
 ### How to get updates?
 
 Use [Obtainium](#or-use-obtainium).

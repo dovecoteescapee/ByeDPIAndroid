@@ -30,6 +30,14 @@
 
 ## FAQ
 
+### Это вирус?
+
+Нет. [Обсуждение проблемы](https://github.com/dovecoteescapee/ByeDPIAndroid/issues/61).
+
+### У меня не получается настроить. Что делать?
+
+Вы можете попросить помощи в [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
+
 ### Как получать обновления?
 
 Используйте [Obtainium](#или-используйте-obtainium).
