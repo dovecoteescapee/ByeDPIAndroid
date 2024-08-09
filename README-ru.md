@@ -83,3 +83,16 @@ DPI (Deep Packet Inspection) - это технология для анализа
    ./gradlew assembleRelease`
    ```
 4. APK будет лежать в `app/build/outputs/apk/release/`
+
+## Если не работает из коробки
+
+Попробуйте использовать Ютуб через браузер.
+
+Или попробуйте сменить настройки в приложении на вот такие:
+
+- DNS: 8.8.8.8
+- Mode: VPN
+- Desync only HTTPS and TLS: On
+- Desync method: fake
+- Split position: 1
+- Split TLS record at SNI: On
