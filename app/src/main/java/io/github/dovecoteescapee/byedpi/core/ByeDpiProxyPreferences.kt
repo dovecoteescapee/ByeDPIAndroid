@@ -1,14 +1,48 @@
 package io.github.dovecoteescapee.byedpi.core
 
 import android.content.SharedPreferences
+import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
+import io.github.dovecoteescapee.byedpi.utility.shellSplit
 
-class ByeDpiProxyPreferences(
+sealed interface ByeDpiProxyPreferences {
+    companion object {
+        fun fromSharedPreferences(preferences: SharedPreferences): ByeDpiProxyPreferences =
+            when (preferences.getBoolean("byedpi_enable_cmd_settings", false)) {
+                true -> ByeDpiProxyCmdPreferences(preferences)
+                false -> ByeDpiProxyUIPreferences(preferences)
+            }
+    }
+}
+
+class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
+    constructor(cmd: String) : this(cmdToArgs(cmd))
+
+    constructor(preferences: SharedPreferences) : this(
+        preferences.getStringNotNull(
+            "byedpi_cmd_args",
+            ""
+        )
+    )
+
+    companion object {
+        private fun cmdToArgs(cmd: String): Array<String> {
+            val firstArgIndex = cmd.indexOf("-")
+            val argsStr = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
+            return arrayOf("ciadpi") + shellSplit(argsStr)
+        }
+    }
+}
+
+class ByeDpiProxyUIPreferences(
     ip: String? = null,
     port: Int? = null,
     maxConnections: Int? = null,
     bufferSize: Int? = null,
     defaultTtl: Int? = null,
     noDomain: Boolean? = null,
+    desyncHttp: Boolean? = null,
+    desyncHttps: Boolean? = null,
+    desyncUdp: Boolean? = null,
     desyncMethod: DesyncMethod? = null,
     splitPosition: Int? = null,
     splitAtHost: Boolean? = null,
@@ -21,7 +55,7 @@ class ByeDpiProxyPreferences(
     tlsRecordSplit: Boolean? = null,
     tlsRecordSplitPosition: Int? = null,
     tlsRecordSplitAtSni: Boolean? = null,
-) {
+) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
     val port: Int = port ?: 1080
     val maxConnections: Int = maxConnections ?: 512
@@ -29,6 +63,9 @@ class ByeDpiProxyPreferences(
     val defaultTtl: Int = defaultTtl ?: 0
     val customTtl: Boolean = defaultTtl != null
     val noDomain: Boolean = noDomain ?: false
+    val desyncHttp: Boolean = desyncHttp ?: true
+    val desyncHttps: Boolean = desyncHttps ?: true
+    val desyncUdp: Boolean = desyncUdp ?: false
     val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
     val splitPosition: Int = splitPosition ?: 3
     val splitAtHost: Boolean = splitAtHost ?: false
@@ -49,6 +86,9 @@ class ByeDpiProxyPreferences(
         bufferSize = preferences.getString("byedpi_buffer_size", null)?.toIntOrNull(),
         defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toIntOrNull(),
         noDomain = preferences.getBoolean("byedpi_no_domain", false),
+        desyncHttp = preferences.getBoolean("byedpi_desync_http", true),
+        desyncHttps = preferences.getBoolean("byedpi_desync_https", true),
+        desyncUdp = preferences.getBoolean("byedpi_desync_udp", false),
         desyncMethod = preferences.getString("byedpi_desync_method", null)
             ?.let { DesyncMethod.fromName(it) },
         splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),
@@ -60,9 +100,10 @@ class ByeDpiProxyPreferences(
         domainMixedCase = preferences.getBoolean("byedpi_domain_mixed_case", false),
         hostRemoveSpaces = preferences.getBoolean("byedpi_host_remove_spaces", false),
         tlsRecordSplit = preferences.getBoolean("byedpi_tlsrec_enabled", false),
-        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)?.toIntOrNull(),
+        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)
+            ?.toIntOrNull(),
         tlsRecordSplitAtSni = preferences.getBoolean("byedpi_tlsrec_at_sni", false),
-        )
+    )
 
     enum class DesyncMethod {
         None,

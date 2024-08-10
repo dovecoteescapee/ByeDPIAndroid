@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:tag="byedpi_cmd_settings">
+
+    <Preference
+        android:key="byedpi_readme"
+        android:title="Documentation"
+        android:textColor="?attr/textFillColor"
+        android:icon="@drawable/ic_github_36">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/hufrea/byedpi/tree/main#readme-ov-file" />
+    </Preference>
+
+    <androidx.preference.PreferenceCategory>
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_cmd_args"
+            android:title="Command line arguments"
+            android:dialogTitle="Command line arguments"
+            android:inputType="textMultiLine" />
+
+    </androidx.preference.PreferenceCategory>
+
+</PreferenceScreen>

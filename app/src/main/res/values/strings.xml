@@ -47,4 +47,14 @@
     <string name="general_category">General</string>
     <string name="byedpi_category">ByeDPI</string>
     <string name="about_category">About</string>
+    <string name="command_line_editor">Command line editor</string>
+    <string name="ui_editor">UI editor</string>
+    <string name="use_command_line_settings">Use command line settings</string>
+    <string name="desync_http">Desync HTTP</string>
+    <string name="desync_https">Desync HTTPS</string>
+    <string name="desync_udp">Desync UDP</string>
+    <string name="oob_data">OOB Data</string>
+    <string name="sni_of_fake_packet">SNI of fake packet</string>
+    <string name="byedpi_proxy">Proxy</string>
+    <string name="byedpi_desync">Desync</string>
 </resources>

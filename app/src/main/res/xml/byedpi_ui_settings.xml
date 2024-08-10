@@ -1,48 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:tag="settings_screen">
+    android:tag="byedpi_ui_settings">
+
+    <Preference
+        android:key="byedpi_readme"
+        android:title="@string/byedpi_readme_link"
+        android:textColor="?attr/textFillColor"
+        android:icon="@drawable/ic_github_36">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/hufrea/byedpi/tree/main#readme-ov-file" />
+    </Preference>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/general_category">
-
-        <DropDownPreference
-            android:key="app_theme"
-            android:title="@string/theme_settings"
-            android:entries="@array/themes"
-            android:entryValues="@array/themes_entries"
-            android:defaultValue="system"
-            app:useSimpleSummaryProvider="true" />
-
-        <DropDownPreference
-            android:key="byedpi_mode"
-            android:title="@string/mode_setting"
-            android:entries="@array/byedpi_modes"
-            android:entryValues="@array/byedpi_modes_entries"
-            android:defaultValue="vpn"
-            app:useSimpleSummaryProvider="true" />
-
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory
-        android:title="@string/byedpi_category">
-
-        <Preference
-            android:key="byedpi_readme"
-            android:title="@string/byedpi_readme_link"
-            android:textColor="?attr/textFillColor"
-            android:icon="@drawable/ic_github_36">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/hufrea/byedpi/tree/main#readme-ov-file" />
-        </Preference>
-
-        <com.takisoft.preferencex.EditTextPreference
-            android:key="dns_ip"
-            android:title="@string/dbs_ip_setting"
-            android:defaultValue="1.1.1.1"
-            app:useSimpleSummaryProvider="true"/>
+        android:title="@string/byedpi_proxy">
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_proxy_ip"
@@ -71,17 +43,22 @@
             android:defaultValue="16384"
             app:useSimpleSummaryProvider="true" />
 
+        <CheckBoxPreference
+            android:key="byedpi_no_domain"
+            android:title="@string/byedpi_no_domain_setting"
+            android:defaultValue="false" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/byedpi_desync">
+
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_default_ttl"
             android:title="@string/byedpi_default_ttl_setting"
             android:inputType="number"
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
-
-        <CheckBoxPreference
-            android:key="byedpi_no_domain"
-            android:title="@string/byedpi_no_domain_setting"
-            android:defaultValue="false"/>
 
         <DropDownPreference
             android:key="byedpi_desync_method"
@@ -90,6 +67,21 @@
             android:entryValues="@array/byedpi_desync_methods_entries"
             android:defaultValue="disorder"
             app:useSimpleSummaryProvider="true" />
+
+        <CheckBoxPreference
+            android:key="byedpi_desync_http"
+            android:title="@string/desync_http"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
+            android:key="byedpi_desync_https"
+            android:title="@string/desync_https"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
+            android:key="byedpi_desync_udp"
+            android:title="@string/desync_udp"
+            android:defaultValue="false" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_split_position"
@@ -112,13 +104,13 @@
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_fake_sni"
-            android:title="SNI of fake packet"
+            android:title="@string/sni_of_fake_packet"
             android:defaultValue="www.iana.org"
             app:useSimpleSummaryProvider="true" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_oob_data"
-            android:title="OOB Data"
+            android:title="@string/oob_data"
             android:defaultValue="a"
             app:useSimpleSummaryProvider="true" />
 
@@ -153,26 +145,6 @@
             android:key="byedpi_tlsrec_at_sni"
             android:title="@string/byedpi_tlsrec_at_sni_setting"
             android:defaultValue="false" />
-
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory
-        android:title="@string/about_category">
-
-        <Preference
-            android:key="version"
-            android:title="@string/version"
-            app:useSimpleSummaryProvider="true"
-            tools:summary="1.0.0" />
-
-        <Preference
-            android:key="source_code"
-            android:title="@string/source_code_link"
-            android:icon="@drawable/ic_github_36">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/dovecoteescapee/ByeDPIAndroid" />
-        </Preference>
 
     </androidx.preference.PreferenceCategory>
 
