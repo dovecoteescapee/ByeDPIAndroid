@@ -27,14 +27,14 @@
             android:title="@string/byedpi_proxy_port_setting"
             android:inputType="number"
             android:defaultValue="1080"
-            app:useSimpleSummaryProvider="true"/>
+            app:useSimpleSummaryProvider="true" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_max_connections"
             android:title="@string/byedpi_max_connections_setting"
             android:inputType="number"
             android:defaultValue="512"
-            app:useSimpleSummaryProvider="true"/>
+            app:useSimpleSummaryProvider="true" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_buffer_size"

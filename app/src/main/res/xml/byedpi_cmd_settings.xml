@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:tag="byedpi_cmd_settings">
 
     <Preference
@@ -18,7 +19,8 @@
             android:key="byedpi_cmd_args"
             android:title="Command line arguments"
             android:dialogTitle="Command line arguments"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            app:useSimpleSummaryProvider="true" />
 
     </androidx.preference.PreferenceCategory>
 
