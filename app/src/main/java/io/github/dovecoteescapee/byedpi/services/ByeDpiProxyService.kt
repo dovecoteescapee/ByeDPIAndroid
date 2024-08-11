@@ -10,19 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxy
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyPreferences
-import io.github.dovecoteescapee.byedpi.data.AppStatus
-import io.github.dovecoteescapee.byedpi.data.START_ACTION
-import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
-import io.github.dovecoteescapee.byedpi.data.FAILED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.Mode
-import io.github.dovecoteescapee.byedpi.data.SENDER
-import io.github.dovecoteescapee.byedpi.data.STARTED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.STOPPED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.Sender
-import io.github.dovecoteescapee.byedpi.data.ServiceStatus
-import io.github.dovecoteescapee.byedpi.utility.createConnectionNotification
-import io.github.dovecoteescapee.byedpi.utility.getPreferences
-import io.github.dovecoteescapee.byedpi.utility.registerNotificationChannel
+import io.github.dovecoteescapee.byedpi.data.*
+import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -159,7 +148,7 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
-        ByeDpiProxyPreferences(getPreferences(this))
+        ByeDpiProxyPreferences.fromSharedPreferences(getPreferences())
 
     private fun updateStatus(newStatus: ServiceStatus) {
         Log.d(TAG, "Proxy status changed from $status to $newStatus")

@@ -8,7 +8,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ServiceLifecycleDispatcher
 
+/**
+ * Based on @link [androidx.lifecycle.LifecycleService]
+ */
 open class LifecycleVpnService : VpnService(), LifecycleOwner {
+    @Suppress("LeakingThis")
     private val dispatcher = ServiceLifecycleDispatcher(this)
 
     @CallSuper

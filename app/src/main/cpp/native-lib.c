@@ -19,10 +19,41 @@ const enum demode DESYNC_METHODS[] = {
         DESYNC_OOB,
 };
 
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, __attribute__((unused)) void *reserved) {
-    oob_data.data = NULL;
+JNIEXPORT jint JNI_OnLoad(
+        __attribute__((unused)) JavaVM *vm,
+        __attribute__((unused)) void *reserved) {
     default_params = params;
     return JNI_VERSION_1_6;
+}
+
+JNIEXPORT jint JNICALL
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocketWithCommandLine(
+        JNIEnv *env,
+        __attribute__((unused)) jobject thiz,
+        jobjectArray args) {
+    int argc = (*env)->GetArrayLength(env, args);
+    char *argv[argc];
+    for (int i = 0; i < argc; i++) {
+        jstring arg = (jstring) (*env)->GetObjectArrayElement(env, args, i);
+        const char *arg_str = (*env)->GetStringUTFChars(env, arg, 0);
+        argv[i] = strdup(arg_str);
+        (*env)->ReleaseStringUTFChars(env, arg, arg_str);
+    }
+
+    int res = parse_args(argc, argv);
+    if (res < 0) {
+        uniperror("parse_args");
+        return -1;
+    }
+
+    int fd = listen_socket((struct sockaddr_ina *)&params.laddr);
+    if (fd < 0) {
+        uniperror("listen_socket");
+        return -1;
+    }
+    LOG(LOG_S, "listen_socket, fd: %d", fd);
+
+    return fd;
 }
 
 JNIEXPORT jint JNICALL
@@ -36,6 +67,9 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jint default_ttl,
         jboolean custom_ttl,
         jboolean no_domain,
+        jboolean desync_http,
+        jboolean desync_https,
+        jboolean desync_udp,
         jint desync_method,
         jint split_position,
         jboolean split_at_host,
@@ -90,6 +124,10 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     }
 
     dp->ttl = fake_ttl;
+    dp->proto =
+            IS_HTTP * desync_http |
+            IS_HTTPS * desync_https |
+            IS_UDP * desync_udp;
     dp->mod_http =
             MH_HMIX * host_mixed_case |
             MH_DMIX * domain_mixed_case |
@@ -108,7 +146,9 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
 
     enum demode mode = DESYNC_METHODS[desync_method];
 
-    part->flag = split_at_host ? OFFSET_SNI : 0;
+    int offset_flag = dp->proto || desync_https ? OFFSET_SNI : OFFSET_HOST;
+
+    part->flag = split_at_host ? offset_flag : 0;
     part->pos = split_position;
     part->m = mode;
 
@@ -125,7 +165,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
             return -1;
         }
 
-        tlsrec_part->flag = tls_record_split_at_sni ? OFFSET_SNI : 0;
+        tlsrec_part->flag = tls_record_split_at_sni ? offset_flag : 0;
         tlsrec_part->pos = tls_record_split_position;
     }
 
@@ -152,6 +192,16 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         }
         memcpy(oob_data.data, oob, oob_len);
         (*env)->ReleaseStringUTFChars(env, custom_oob_data, oob);
+    }
+
+    if (dp->proto) {
+        dp = add((void *)&params.dp,
+                 &params.dp_count, sizeof(struct desync_params));
+        if (!dp) {
+            uniperror("add");
+            clear_params();
+            return -1;
+        }
     }
 
     params.mempool = mem_pool(0);

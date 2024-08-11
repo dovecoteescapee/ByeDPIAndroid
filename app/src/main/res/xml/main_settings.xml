@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:tag="main_settings">
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/general_category">
+
+        <DropDownPreference
+            android:key="app_theme"
+            android:title="@string/theme_settings"
+            android:entries="@array/themes"
+            android:entryValues="@array/themes_entries"
+            android:defaultValue="system"
+            app:useSimpleSummaryProvider="true" />
+
+        <DropDownPreference
+            android:key="byedpi_mode"
+            android:title="@string/mode_setting"
+            android:entries="@array/byedpi_modes"
+            android:entryValues="@array/byedpi_modes_entries"
+            android:defaultValue="vpn"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="dns_ip"
+            android:title="@string/dbs_ip_setting"
+            android:defaultValue="1.1.1.1"
+            app:useSimpleSummaryProvider="true"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/byedpi_category">
+
+        <SwitchPreference
+            android:key="byedpi_enable_cmd_settings"
+            android:title="@string/use_command_line_settings"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="byedpi_ui_settings"
+            android:title="@string/ui_editor"
+            app:useSimpleSummaryProvider="true"
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment" />
+
+        <Preference
+            android:key="byedpi_cmd_settings"
+            android:title="@string/command_line_editor"
+            app:useSimpleSummaryProvider="true"
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/about_category">
+
+        <Preference
+            android:key="version"
+            android:title="@string/version"
+            app:useSimpleSummaryProvider="true"
+            tools:summary="1.0.0" />
+
+        <Preference
+            android:key="source_code"
+            android:title="@string/source_code_link"
+            android:icon="@drawable/ic_github_36">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/dovecoteescapee/ByeDPIAndroid" />
+        </Preference>
+
+    </androidx.preference.PreferenceCategory>
+
+</PreferenceScreen>

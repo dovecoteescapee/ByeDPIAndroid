@@ -41,7 +41,19 @@ class ByeDpiProxy {
                 throw IllegalStateException("Proxy is already running")
             }
 
-            val fd = jniCreateSocket(
+            val fd = createSocketFromPreferences(preferences)
+            if (fd < 0) {
+                return -1
+            }
+            this.fd = fd
+            fd
+        }
+
+    private fun createSocketFromPreferences(preferences: ByeDpiProxyPreferences) =
+        when (preferences) {
+            is ByeDpiProxyCmdPreferences -> jniCreateSocketWithCommandLine(preferences.args)
+
+            is ByeDpiProxyUIPreferences -> jniCreateSocket(
                 ip = preferences.ip,
                 port = preferences.port,
                 maxConnections = preferences.maxConnections,
@@ -49,6 +61,9 @@ class ByeDpiProxy {
                 defaultTtl = preferences.defaultTtl,
                 customTtl = preferences.customTtl,
                 noDomain = preferences.noDomain,
+                desyncHttp = preferences.desyncHttp,
+                desyncHttps = preferences.desyncHttps,
+                desyncUdp = preferences.desyncUdp,
                 desyncMethod = preferences.desyncMethod.ordinal,
                 splitPosition = preferences.splitPosition,
                 splitAtHost = preferences.splitAtHost,
@@ -62,14 +77,9 @@ class ByeDpiProxy {
                 tlsRecordSplitPosition = preferences.tlsRecordSplitPosition,
                 tlsRecordSplitAtSni = preferences.tlsRecordSplitAtSni,
             )
-
-            if (fd < 0) {
-                return -1
-            }
-
-            this.fd = fd
-            fd
         }
+
+    private external fun jniCreateSocketWithCommandLine(args: Array<String>): Int
 
     private external fun jniCreateSocket(
         ip: String,
@@ -79,6 +89,9 @@ class ByeDpiProxy {
         defaultTtl: Int,
         customTtl: Boolean,
         noDomain: Boolean,
+        desyncHttp: Boolean,
+        desyncHttps: Boolean,
+        desyncUdp: Boolean,
         desyncMethod: Int,
         splitPosition: Int,
         splitAtHost: Boolean,

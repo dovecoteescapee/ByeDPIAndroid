@@ -17,13 +17,7 @@ import androidx.core.service.quicksettings.PendingIntentActivityWrapper
 import androidx.core.service.quicksettings.TileServiceCompat
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
-import io.github.dovecoteescapee.byedpi.data.AppStatus
-import io.github.dovecoteescapee.byedpi.data.FAILED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.Mode
-import io.github.dovecoteescapee.byedpi.data.SENDER
-import io.github.dovecoteescapee.byedpi.data.STARTED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.STOPPED_BROADCAST
-import io.github.dovecoteescapee.byedpi.data.Sender
+import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
 
@@ -116,7 +110,7 @@ class QuickTileService : TileService() {
         val (status) = appStatus
         when (status) {
             AppStatus.Halted -> {
-                val mode = getPreferences(this).mode()
+                val mode = getPreferences().mode()
 
                 if (mode == Mode.VPN && VpnService.prepare(this) != null) {
                     updateStatus()
