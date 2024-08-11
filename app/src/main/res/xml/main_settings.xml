@@ -27,7 +27,7 @@
             android:key="dns_ip"
             android:title="@string/dbs_ip_setting"
             android:defaultValue="1.1.1.1"
-            app:useSimpleSummaryProvider="true"/>
+            app:useSimpleSummaryProvider="true" />
 
     </androidx.preference.PreferenceCategory>
 
