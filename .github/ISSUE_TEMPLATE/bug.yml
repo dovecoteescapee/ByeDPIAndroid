@@ -1,0 +1,67 @@
+name: Bug Report / Сообщение об ошибке
+description: File a bug report / Сообщить об ошибке в программе
+labels: [ bug ]
+assignees: dovecoteescapee
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### If you have trouble with specific websites or or can't configure the app, please use the [discussions section](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions) to discuss it. This template is only for reporting bugs in the ByeDPI program.
+        ### Если у вас не работают какие-то сайты или не получается настроить приложение, используйте [раздел дискуссий](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions) для обсуждения этого. Этот шаблон предназначен только для сообщений об ошибках в программе ByeDPI.
+  - type: textarea
+    id: bug
+    attributes:
+      label: Describe the bug / Описание ошибки
+      description: A clear and concise description of what the bug is / Четкое и краткое описание ошибки
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To Reproduce / Как воспроизвести
+      description: Steps to reproduce the behavior / Шаги для воспроизведения проблемы
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / Ожидаемое поведение
+      description: A clear and concise description of what you expected to happen / Четкое и краткое описание ожидаемого поведения
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Скриншоты
+      description: If applicable, add screenshots to help explain your problem / При необходимости добавьте скриншоты, чтобы объяснить вашу проблему
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment / Окружение
+      description: Please complete the following information / Пожалуйста, заполните следующую информацию
+      value: |
+        **Smartphone / Смартфон:**
+        - Device: [e.g. Pixel Fold, Samsung Galaxy S24]
+        - Android version: [e.g. 10]
+        - ByeDPI version: [e.g. 1.0.2]
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context / Дополнительная информация
+      description: Add any other context about the problem here / Добавьте любую другую информацию о проблеме здесь
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before you submit / Прежде чем отправить
+      options:
+        - label: I have searched the open and closed issues for duplicates / Я искал(а) открытые и закрытые задачи на предмет дубликатов
+          required: true
+        - label: This is not a question, feature request, or general feedback / Это не вопрос, предложение новой функциональности или общий отзыв
+          required: true
