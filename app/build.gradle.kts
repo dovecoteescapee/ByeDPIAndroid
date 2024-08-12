@@ -50,6 +50,14 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    // https://android.izzysoft.de/articles/named/iod-scan-apkchecks?lang=en#blobs
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
 }
 
 dependencies {
