@@ -10,7 +10,8 @@
 
 Android application that runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship.
 
-The application locally runs [ByeDPI](https://github.com/hufrea/byedpi) and redirects all traffic through it.
+
+This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) and redirects all traffic through it.
 
 ## Installation
 
@@ -38,6 +39,10 @@ No. [Discussion of the problem](https://github.com/dovecoteescapee/ByeDPIAndroid
 
 You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
 
+### Does the application require root access?
+
+No. All application features work without root.
+
 ### How to get updates?
 
 Use [Obtainium](#or-use-obtainium).
@@ -45,6 +50,18 @@ Use [Obtainium](#or-use-obtainium).
 ### Is this a VPN?
 
 No. The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.
+
+### Как использовать его вместе с AdGuard?
+
+1. Run ByeDPI in proxy mode.
+2. Add ByeDPI to AdGuard exceptions on the "App management" tab.
+3. In AdGuard settings, specify the proxy:
+
+   ```plaintext
+   Proxy type: SOCKS5
+   Proxy host: 127.0.0.1
+   Proxy port: 1080 (default)
+   ```
 
 ### What data does the application collect?
 
