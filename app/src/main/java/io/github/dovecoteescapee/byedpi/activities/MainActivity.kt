@@ -146,17 +146,7 @@ class MainActivity : AppCompatActivity() {
                 AppStatus.Running -> stop()
             }
         }
-        binding.settingsButton?.setText(R.string.settings)
-        binding.settingsButton?.setOnClickListener {
-            val (status, _) = appStatus
-            if (status == AppStatus.Halted) {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
+
         val theme = getPreferences()
             .getString("app_theme", null)
         MainSettingsFragment.setTheme(theme ?: "system")
