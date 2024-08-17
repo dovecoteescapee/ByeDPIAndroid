@@ -8,9 +8,6 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
-import engine.Engine
-import engine.Key
-import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxy
@@ -23,11 +20,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class ByeDpiVpnService : LifecycleVpnService() {
-    private val proxy = ByeDpiProxy()
+    private val byeDpiProxy = ByeDpiProxy()
     private var proxyJob: Job? = null
-    private var vpn: ParcelFileDescriptor? = null
+    private var tunFd: ParcelFileDescriptor? = null
     private val mutex = Mutex()
     private var stopping: Boolean = false
 
@@ -138,7 +136,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val preferences = getByeDpiPreferences()
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
-            val code = proxy.startProxy(preferences)
+            val code = byeDpiProxy.startProxy(preferences)
 
             withContext(Dispatchers.Main) {
                 if (code != 0) {
@@ -164,7 +162,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             return
         }
 
-        proxy.stopProxy()
+        byeDpiProxy.stopProxy()
         proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
         proxyJob = null
 
@@ -174,7 +172,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun startTun2Socks() {
         Log.i(TAG, "Starting tun2socks")
 
-        if (vpn != null) {
+        if (tunFd != null) {
             throw IllegalStateException("VPN field not null")
         }
 
@@ -182,22 +180,49 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val port = sharedPreferences.getString("byedpi_proxy_port", null)?.toInt() ?: 1080
         val dns = sharedPreferences.getStringNotNull("dns_ip", "1.1.1.1")
 
+        val tun2socksConfig = """
+        | misc:
+        |   task-stack-size: 81920
+        | socks5:
+        |   mtu: 8500
+        |   address: 127.0.0.1
+        |   port: $port
+        |   udp: udp
+        """.trimMargin("| ")
+
+        val configPath = try {
+            File.createTempFile("config", "tmp", cacheDir).apply {
+                writeText(tun2socksConfig)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create config file", e)
+            throw e
+        }
+
         val vpn = createBuilder(dns).establish()
             ?: throw IllegalStateException("VPN connection failed")
 
-        this.vpn = vpn
-//        val fd = vpn.detachFd()
-        Engine.insert(createKey(vpn.fd, port))
-        Engine.start()
+        this.tunFd = vpn
+
+        Log.d(TAG, "Native tun2socks start")
+        TProxyService.TProxyStartService(configPath.absolutePath, vpn.fd)
 
         Log.i(TAG, "Tun2Socks started")
     }
 
     private fun stopTun2Socks() {
         Log.i(TAG, "Stopping tun2socks")
-//        Engine.stop() // sometimes crashes with fdsan
-        vpn?.close() ?: Log.w(TAG, "VPN not running") // Is engine close sockets?
-        vpn = null
+
+        TProxyService.TProxyStopService()
+        Log.d(TAG, "Native tun2socks stopped done")
+
+        tunFd?.close() ?: Log.w(TAG, "VPN not running")
+        tunFd = null
+        try {
+            File(cacheDir, "config.tmp").delete()
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Failed to delete config file", e)
+        }
         Log.i(TAG, "Tun2socks stopped")
     }
 
@@ -212,6 +237,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         setStatus(
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
+
                 ServiceStatus.Disconnected,
                 ServiceStatus.Failed -> {
                     proxyJob = null
@@ -261,23 +287,8 @@ class ByeDpiVpnService : LifecycleVpnService() {
             builder.setMetered(false)
         }
 
-        builder.addDisallowedApplication("io.github.dovecoteescapee.byedpi")
+        builder.addDisallowedApplication(applicationContext.packageName)
 
         return builder
-    }
-
-    private fun createKey(fd: Int, port: Int): Key = Key().apply {
-        mark = 0
-        mtu = 0
-        device = "fd://${fd}"
-
-        setInterface("")
-        logLevel = if (BuildConfig.DEBUG) "debug" else "info"
-        proxy = "socks5://127.0.0.1:$port"
-
-        restAPI = ""
-        tcpSendBufferSize = ""
-        tcpReceiveBufferSize = ""
-        tcpModerateReceiveBuffer = false
     }
 }
