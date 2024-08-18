@@ -38,7 +38,9 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.main_settings, rootKey)
 
-        setEditTextPreferenceListener("dns_ip") { checkIp(it) }
+        setEditTextPreferenceListener("dns_ip") {
+            it.isBlank() || checkIp(it)
+        }
 
         findPreferenceNotNull<DropDownPreference>("app_theme")
             .setOnPreferenceChangeListener { _, newValue ->

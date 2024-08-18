@@ -17,8 +17,8 @@
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_cmd_args"
-            android:title="Command line arguments"
-            android:dialogTitle="Command line arguments"
+            android:title="@string/command_line_arguments"
+            android:dialogTitle="@string/command_line_arguments"
             android:inputType="textMultiLine"
             app:useSimpleSummaryProvider="true" />
 

@@ -34,4 +34,15 @@
         <item name="fake">fake</item>
         <item name="oob">oob</item>
     </array>
+
+    <array name="byedpi_hosts_modes">
+        <item name="disable">Disable</item>
+        <item name="blacklist">Blacklist</item>
+        <item name="whitelist">Whitelist</item>
+    </array>
+    <array name="byedpi_hosts_modes_entries">
+        <item name="disable">disable</item>
+        <item name="blacklist">blacklist</item>
+        <item name="whitelist">whitelist</item>
+    </array>
 </resources>

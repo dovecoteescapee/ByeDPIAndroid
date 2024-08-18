@@ -53,6 +53,28 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_desync">
 
+        <DropDownPreference
+            android:key="byedpi_hosts_mode"
+            android:title="@string/byedpi_hosts_mode_setting"
+            android:entries="@array/byedpi_hosts_modes"
+            android:entryValues="@array/byedpi_hosts_modes_entries"
+            android:defaultValue="disable"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_hosts_blacklist"
+            android:title="@string/byedpi_hosts_blacklist_setting"
+            android:dialogTitle="@string/byedpi_hosts_blacklist_setting"
+            android:inputType="textMultiLine"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_hosts_whitelist"
+            android:title="@string/byedpi_hosts_whitelist_setting"
+            android:dialogTitle="@string/byedpi_hosts_whitelist_setting"
+            android:inputType="textMultiLine"
+            app:useSimpleSummaryProvider="true" />
+
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_default_ttl"
             android:title="@string/byedpi_default_ttl_setting"

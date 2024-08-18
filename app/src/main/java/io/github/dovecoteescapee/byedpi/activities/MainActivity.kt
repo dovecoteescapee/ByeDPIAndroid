@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         private fun collectLogs(): String? =
             try {
                 Runtime.getRuntime()
-                    .exec("logcat *:I -d")
+                    .exec("logcat *:D -d")
                     .inputStream.bufferedReader()
                     .use { it.readText() }
             } catch (e: Exception) {

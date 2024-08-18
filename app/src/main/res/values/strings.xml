@@ -57,4 +57,8 @@
     <string name="sni_of_fake_packet">SNI of fake packet</string>
     <string name="byedpi_proxy">Proxy</string>
     <string name="byedpi_desync">Desync</string>
+    <string name="command_line_arguments">Command line arguments</string>
+    <string name="byedpi_hosts_mode_setting">Hosts</string>
+    <string name="byedpi_hosts_blacklist_setting">Hosts blacklist</string>
+    <string name="byedpi_hosts_whitelist_setting">Hosts whitelist</string>
 </resources>
