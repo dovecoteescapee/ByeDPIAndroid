@@ -12,11 +12,17 @@
 #include "utils.h"
 
 const enum demode DESYNC_METHODS[] = {
-        DESYNC_NONE,
-        DESYNC_SPLIT,
-        DESYNC_DISORDER,
-        DESYNC_FAKE,
-        DESYNC_OOB,
+    DESYNC_NONE,
+    DESYNC_SPLIT,
+    DESYNC_DISORDER,
+    DESYNC_FAKE,
+    DESYNC_OOB,
+};
+
+enum hosts_mode {
+    HOSTS_DISABLE,
+    HOSTS_BLACKLIST,
+    HOSTS_WHITELIST,
 };
 
 JNIEXPORT jint JNI_OnLoad(
@@ -81,8 +87,9 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jboolean host_remove_spaces,
         jboolean tls_record_split,
         jint tls_record_split_position,
-        jboolean tls_record_split_at_sni) {
-
+        jboolean tls_record_split_at_sni,
+        jint hosts_mode,
+        jstring hosts) {
     struct sockaddr_ina s;
 
     const char *address = (*env)->GetStringUTFChars(env, ip, 0);
@@ -112,6 +119,29 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         }
     }
 
+    if (hosts_mode == HOSTS_WHITELIST) {
+        struct desync_params *dp = add(
+                (void *) &params.dp,
+                &params.dp_count,
+                sizeof(struct desync_params)
+        );
+        if (!dp) {
+            uniperror("add");
+            reset_params();
+            return -1;
+        }
+
+        const char *str = (*env)->GetStringUTFChars(env, hosts, 0);
+        dp->file_ptr = parse_cform(str, &dp->file_size);
+        (*env)->ReleaseStringUTFChars(env, hosts, str);
+        dp->hosts = parse_hosts(dp->file_ptr, dp->file_size);
+        if (!dp->hosts) {
+            perror("parse_hosts");
+            clear_params();
+            return -1;
+        }
+    }
+
     struct desync_params *dp = add(
             (void *) &params.dp,
             &params.dp_count,
@@ -121,6 +151,18 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         uniperror("add");
         reset_params();
         return -1;
+    }
+
+    if (hosts_mode == HOSTS_BLACKLIST) {
+        const char *str = (*env)->GetStringUTFChars(env, hosts, 0);
+        dp->file_ptr = parse_cform(str, &dp->file_size);
+        (*env)->ReleaseStringUTFChars(env, hosts, str);
+        dp->hosts = parse_hosts(dp->file_ptr, dp->file_size);
+        if (!dp->hosts) {
+            perror("parse_hosts");
+            clear_params();
+            return -1;
+        }
     }
 
     dp->ttl = fake_ttl;

@@ -6,6 +6,7 @@ import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyUIPreferences
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyUIPreferences.DesyncMethod.*
+import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyUIPreferences.HostsMode.*
 import io.github.dovecoteescapee.byedpi.utility.*
 
 class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
@@ -65,7 +66,11 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val desyncMethod =
             findPreferenceNotNull<ListPreference>("byedpi_desync_method")
                 .value.let { ByeDpiProxyUIPreferences.DesyncMethod.fromName(it) }
+        val hostsMode = findPreferenceNotNull<ListPreference>("byedpi_hosts_mode")
+            .value.let { ByeDpiProxyUIPreferences.HostsMode.fromName(it) }
 
+        val hostsBlacklist = findPreferenceNotNull<EditTextPreference>("byedpi_hosts_blacklist")
+        val hostsWhitelist = findPreferenceNotNull<EditTextPreference>("byedpi_hosts_whitelist")
         val desyncHttp = findPreferenceNotNull<CheckBoxPreference>("byedpi_desync_http")
         val desyncHttps = findPreferenceNotNull<CheckBoxPreference>("byedpi_desync_https")
         val desyncUdp = findPreferenceNotNull<CheckBoxPreference>("byedpi_desync_udp")
@@ -82,6 +87,23 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val splitTlsRecPosition =
             findPreferenceNotNull<EditTextPreference>("byedpi_tlsrec_position")
         val splitTlsRecAtSni = findPreferenceNotNull<CheckBoxPreference>("byedpi_tlsrec_at_sni")
+
+        when (hostsMode) {
+            Disable -> {
+                hostsBlacklist.isVisible = false
+                hostsWhitelist.isVisible = false
+            }
+
+            Blacklist -> {
+                hostsBlacklist.isVisible = true
+                hostsWhitelist.isVisible = false
+            }
+
+            Whitelist -> {
+                hostsBlacklist.isVisible = false
+                hostsWhitelist.isVisible = true
+            }
+        }
 
         when (desyncMethod) {
             None -> {

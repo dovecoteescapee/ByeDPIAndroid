@@ -55,6 +55,8 @@ class ByeDpiProxyUIPreferences(
     tlsRecordSplit: Boolean? = null,
     tlsRecordSplitPosition: Int? = null,
     tlsRecordSplitAtSni: Boolean? = null,
+    hostsMode: HostsMode? = null,
+    hosts: String? = null,
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
     val port: Int = port ?: 1080
@@ -78,6 +80,12 @@ class ByeDpiProxyUIPreferences(
     val tlsRecordSplit: Boolean = tlsRecordSplit ?: false
     val tlsRecordSplitPosition: Int = tlsRecordSplitPosition ?: 0
     val tlsRecordSplitAtSni: Boolean = tlsRecordSplitAtSni ?: false
+    val hostsMode: HostsMode =
+        if (hosts?.isBlank() != false) HostsMode.Disable
+        else hostsMode ?: HostsMode.Disable
+    val hosts: String? =
+        if (this.hostsMode == HostsMode.Disable) null
+        else hosts?.trim()
 
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
@@ -103,6 +111,15 @@ class ByeDpiProxyUIPreferences(
         tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)
             ?.toIntOrNull(),
         tlsRecordSplitAtSni = preferences.getBoolean("byedpi_tlsrec_at_sni", false),
+        hostsMode = preferences.getString("byedpi_hosts_mode", null)
+            ?.let { HostsMode.fromName(it) },
+        hosts = preferences.getString("byedpi_hosts_mode", null)?.let {
+            when (HostsMode.fromName(it)) {
+                HostsMode.Blacklist -> preferences.getString("byedpi_hosts_blacklist", null)
+                HostsMode.Whitelist -> preferences.getString("byedpi_hosts_whitelist", null)
+                else -> null
+            }
+        }
     )
 
     enum class DesyncMethod {
@@ -121,6 +138,23 @@ class ByeDpiProxyUIPreferences(
                     "fake" -> Fake
                     "oob" -> OOB
                     else -> throw IllegalArgumentException("Unknown desync method: $name")
+                }
+            }
+        }
+    }
+
+    enum class HostsMode {
+        Disable,
+        Blacklist,
+        Whitelist;
+
+        companion object {
+            fun fromName(name: String): HostsMode {
+                return when (name) {
+                    "disable" -> Disable
+                    "blacklist" -> Blacklist
+                    "whitelist" -> Whitelist
+                    else -> throw IllegalArgumentException("Unknown hosts mode: $name")
                 }
             }
         }

@@ -12,6 +12,7 @@ import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxy
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyPreferences
+import io.github.dovecoteescapee.byedpi.core.TProxyService
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
@@ -268,6 +269,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
 
     private fun createBuilder(dns: String): Builder {
+        Log.d(TAG, "DNS: $dns")
         val builder = Builder()
         builder.setSession("ByeDPI")
         builder.setConfigureIntent(
@@ -282,7 +284,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
         builder.addAddress("10.10.10.10", 32)
         builder.addRoute("0.0.0.0", 0)
         builder.addRoute("0:0:0:0:0:0:0:0", 0)
-        builder.addDnsServer(dns)
+        if (dns.isNotBlank()) {
+            builder.addDnsServer(dns)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
         }

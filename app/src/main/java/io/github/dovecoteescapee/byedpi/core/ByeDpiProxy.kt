@@ -76,6 +76,8 @@ class ByeDpiProxy {
                 tlsRecordSplit = preferences.tlsRecordSplit,
                 tlsRecordSplitPosition = preferences.tlsRecordSplitPosition,
                 tlsRecordSplitAtSni = preferences.tlsRecordSplitAtSni,
+                hostsMode = preferences.hostsMode.ordinal,
+                hosts = preferences.hosts
             )
         }
 
@@ -104,6 +106,8 @@ class ByeDpiProxy {
         tlsRecordSplit: Boolean,
         tlsRecordSplitPosition: Int,
         tlsRecordSplitAtSni: Boolean,
+        hostsMode: Int,
+        hosts: String?
     ): Int
 
     private external fun jniStartProxy(fd: Int): Int

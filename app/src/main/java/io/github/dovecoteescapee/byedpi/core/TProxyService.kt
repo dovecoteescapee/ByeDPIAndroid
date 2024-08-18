@@ -1,4 +1,4 @@
-package io.github.dovecoteescapee.byedpi.services
+package io.github.dovecoteescapee.byedpi.core
 
 object TProxyService {
     init {
