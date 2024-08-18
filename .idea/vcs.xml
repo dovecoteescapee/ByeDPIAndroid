@@ -2,7 +2,11 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/libs/tun2socks" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/byedpi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/jni/hev-socks5-tunnel" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/jni/hev-socks5-tunnel/src/core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/jni/hev-socks5-tunnel/third-part/hev-task-system" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/jni/hev-socks5-tunnel/third-part/lwip" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/jni/hev-socks5-tunnel/third-part/yaml" vcs="Git" />
   </component>
 </project>

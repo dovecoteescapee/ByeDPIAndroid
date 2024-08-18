@@ -1,5 +1,3 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,10 +11,17 @@ android {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.0.2"
+        versionCode = 8
+        versionName = "1.1.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("x86")
+            abiFilters.add("x86_64")
+        }
     }
 
     buildFeatures {
@@ -61,8 +66,6 @@ android {
 }
 
 dependencies {
-    implementation(files("libs/tun2socks.aar"))
-
     implementation("androidx.fragment:fragment-ktx:1.8.2")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -77,75 +80,25 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-abstract class BaseTun2SocksTask : DefaultTask() {
-    @get:InputDirectory
-    val tun2socksDir: File
-        get() = project.file("libs/tun2socks")
-
-    @get:OutputFile
-    val tun2socksOutput: File
-        get() = project.file("libs/tun2socks.aar")
-
-    @Internal
-    protected fun isUpToDate(): Boolean {
-        if (tun2socksOutput.exists()) {
-            val lastModified = tun2socksOutput.lastModified()
-            return !tun2socksDir.walkTopDown().any {
-                it.isFile && it.lastModified() > lastModified
-            }
-        }
-        return false
-    }
-}
-
-abstract class GetGomobileBind : BaseTun2SocksTask() {
-    @TaskAction
-    fun getBind() {
-        if (isUpToDate()) {
-            logger.lifecycle("No changes detected, skipping getBind.")
-            return
-        }
-
-        project.exec {
-            workingDir = tun2socksDir
-
-            commandLine("go", "get", "golang.org/x/mobile/bind")
-        }
-    }
-}
-
-abstract class BuildTun2Socks : BaseTun2SocksTask() {
-    @TaskAction
-    fun buildTun2Socks() {
-        if (isUpToDate()) {
-            logger.lifecycle("No changes detected, skipping buildTun2Socks.")
-            return
-        }
-
-        project.exec {
-            workingDir = tun2socksDir
-
-            commandLine(
-                "gomobile", "bind",
-                "-target", "android",
-                "-androidapi", "21",
-                "-o", tun2socksOutput,
-                "-trimpath",
-                "./engine"
-            )
-        }
-    }
-}
-
-val getGomobileBind = tasks.register<GetGomobileBind>("getGomobileBind") {
+tasks.register<Exec>("runNdkBuild") {
     group = "build"
-    description = "Get gomobile bind for compiling tun2socks"
+
+    val ndkDir = android.ndkDirectory
+    executable = if (System.getProperty("os.name").startsWith("Windows", ignoreCase = true)) {
+        "$ndkDir\\ndk-build.cmd"
+    } else {
+        "$ndkDir/ndk-build"
+    }
+    setArgs(listOf(
+        "NDK_PROJECT_PATH=build/intermediates/ndkBuild",
+        "NDK_LIBS_OUT=src/main/jniLibs",
+        "APP_BUILD_SCRIPT=src/main/jni/Android.mk",
+        "NDK_APPLICATION_MK=src/main/jni/Application.mk"
+    ))
+
+    println("Command: $commandLine")
 }
 
-val buildTun2Socks = tasks.register<BuildTun2Socks>("buildTun2Socks") {
-    group = "build"
-    description = "Build tun2socks for Android"
-    dependsOn(getGomobileBind)
+tasks.preBuild {
+    dependsOn("runNdkBuild")
 }
-
-tasks.preBuild.dependsOn(buildTun2Socks)
