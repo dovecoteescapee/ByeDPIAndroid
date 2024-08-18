@@ -31,10 +31,6 @@ To bypass some blocks, you may need to change the settings. More about the vario
 
 ## FAQ
 
-### Is this a virus?
-
-No. [Discussion of the problem](https://github.com/dovecoteescapee/ByeDPIAndroid/issues/61).
-
 ### I can't configure it. What to do?
 
 You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
@@ -51,7 +47,7 @@ Use [Obtainium](#or-use-obtainium).
 
 No. The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.
 
-### Как использовать его вместе с AdGuard?
+### How to use ByeDPI with AdGuard?
 
 1. Run ByeDPI in proxy mode.
 2. Add ByeDPI to AdGuard exceptions on the "App management" tab.
@@ -80,7 +76,7 @@ DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic
 ## Dependencies
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
-- [Tun2Socks](https://github.com/xjasonlyu/tun2socks)
+- [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
 
 ## Building
 
@@ -89,22 +85,16 @@ For building the application, you need:
 1. JDK 8 or later
 2. Android SDK
 3. Android NDK
-4. Go 1.22 or later
-5. CMake 3.22.1 or later
+4. CMake 3.22.1 or later
 
 To build the application:
 
-1. Install gomobile:
-   ```bash
-   go install golang.org/x/mobile/cmd/gomobile@latest
-   gomobile init
-   ```
-2. Clone the repository with submodules:
+1. Clone the repository with submodules:
    ```bash
    git clone --recurse-submodules
    ```
-3. Run the build script from the root of the repository:
+2. Run the build script from the root of the repository:
    ```bash
    ./gradlew assembleRelease
    ```
-4. The APK will be in `app/build/outputs/apk/release/`
+3. The APK will be in `app/build/outputs/apk/release/`

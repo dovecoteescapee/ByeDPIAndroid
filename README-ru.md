@@ -30,10 +30,6 @@
 
 ## FAQ
 
-### Это вирус?
-
-Нет. [Обсуждение проблемы](https://github.com/dovecoteescapee/ByeDPIAndroid/issues/61).
-
 ### У меня не получается настроить. Что делать?
 
 Вы можете попросить помощи в [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
@@ -54,7 +50,7 @@
 
 Никакие. Приложения не отправляет никакие данные на удаленный сервер. Весь трафик обрабатывается на устройстве.
 
-### Как использовать его вместе с AdGuard?
+### Как использовать ByeDPI вместе с AdGuard?
 
 1. Запустите ByeDPI в режиме прокси.
 2. Добавьте ByeDPI в исключения AdGuard на вкладке "Управление приложениями".
@@ -74,12 +70,12 @@
 
 ### Что такое DPI?
 
-DPI (Deep Packet Inspection) - это технология для анализа и фильтрации трафика. Она используется провайдерами и государственными органами для блокировки сайтов и сервисов. 
+DPI (Deep Packet Inspection) - это технология для анализа и фильтрации трафика. Она используется провайдерами и государственными органами для блокировки сайтов и сервисов.
 
 ## Зависимости
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
-- [Tun2Socks](https://github.com/xjasonlyu/tun2socks)
+- [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
 
 ## Сборка
 
@@ -88,22 +84,16 @@ DPI (Deep Packet Inspection) - это технология для анализа
 1. JDK 8 или новее
 2. Android SDK
 3. Android NDK
-4. Go 1.22 или новее
-5. CMake 3.22.1 или новее
+4. CMake 3.22.1 или новее
 
 Сборка приложения:
 
-1. Установите gomobile:
-   ```bash
-   go install golang.org/x/mobile/cmd/gomobile@latest
-   gomobile init
-   ```
-2. Клонируйте репозиторий с подмодулями:
+1. Клонируйте репозиторий с подмодулями:
    ```bash 
    git clone --recurse-submodules
    ```
-3. Запустите скрипт сборки из корня репозитория:
+2. Запустите скрипт сборки из корня репозитория:
    ```bash
    ./gradlew assembleRelease`
    ```
-4. APK будет лежать в `app/build/outputs/apk/release/`
+3. APK будет лежать в `app/build/outputs/apk/release/`
