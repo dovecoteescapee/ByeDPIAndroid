@@ -89,7 +89,9 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jint tls_record_split_position,
         jboolean tls_record_split_at_sni,
         jint hosts_mode,
-        jstring hosts) {
+        jstring hosts,
+        jboolean tfo,
+        jint udp_fake_count) {
     struct sockaddr_ina s;
 
     const char *address = (*env)->GetStringUTFChars(env, ip, 0);
@@ -105,6 +107,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     params.max_open = max_connections;
     params.bfsize = buffer_size;
     params.resolve = !no_domain;
+    params.tfo = tfo;
 
     if (custom_ttl) {
         params.def_ttl = default_ttl;
@@ -166,6 +169,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     }
 
     dp->ttl = fake_ttl;
+    dp->udp_fake_count = udp_fake_count;
     dp->proto =
             IS_HTTP * desync_http |
             IS_HTTPS * desync_https |

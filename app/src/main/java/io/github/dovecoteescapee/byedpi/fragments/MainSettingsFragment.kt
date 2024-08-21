@@ -85,10 +85,18 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val mode = findPreferenceNotNull<ListPreference>("byedpi_mode")
             .value.let { Mode.fromString(it) }
         val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
+        val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
 
         when (mode) {
-            Mode.VPN -> dns.isVisible = true
-            Mode.Proxy -> dns.isVisible = false
+            Mode.VPN -> {
+                dns.isVisible = true
+                ipv6.isVisible = true
+            }
+
+            Mode.Proxy -> {
+                dns.isVisible = false
+                ipv6.isVisible = false
+            }
         }
     }
 }

@@ -29,6 +29,11 @@
             android:defaultValue="1.1.1.1"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:key="ipv6_enable"
+            android:title="@string/ipv6_setting"
+            android:defaultValue="false" />
+
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

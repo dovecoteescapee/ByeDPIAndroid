@@ -62,4 +62,7 @@
     <string name="byedpi_hosts_mode_setting">Hosts</string>
     <string name="byedpi_hosts_blacklist_setting">Hosts blacklist</string>
     <string name="byedpi_hosts_whitelist_setting">Hosts whitelist</string>
+    <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
+    <string name="byedpi_udp_fake_count">UDP fake count</string>
+    <string name="ipv6_setting">IPv6</string>
 </resources>

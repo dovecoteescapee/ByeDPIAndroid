@@ -75,6 +75,11 @@
             android:inputType="textMultiLine"
             app:useSimpleSummaryProvider="true" />
 
+        <CheckBoxPreference
+            android:key="byedpi_tcp_fast_open"
+            android:title="@string/byedpi_tcp_fast_open_setting"
+            android:defaultValue="false" />
+
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_default_ttl"
             android:title="@string/byedpi_default_ttl_setting"
@@ -109,7 +114,7 @@
             android:key="byedpi_split_position"
             android:title="@string/byedpi_split_position_setting"
             android:inputType="numberSigned"
-            android:defaultValue="3"
+            android:defaultValue="2"
             app:useSimpleSummaryProvider="true" />
 
         <CheckBoxPreference
@@ -134,6 +139,13 @@
             android:key="byedpi_oob_data"
             android:title="@string/oob_data"
             android:defaultValue="a"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:key="byedpi_udp_fake_count"
+            android:title="@string/byedpi_udp_fake_count"
+            android:inputType="number"
+            android:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
 
         <CheckBoxPreference
