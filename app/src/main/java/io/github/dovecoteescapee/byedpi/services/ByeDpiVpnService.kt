@@ -180,6 +180,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val sharedPreferences = getPreferences()
         val port = sharedPreferences.getString("byedpi_proxy_port", null)?.toInt() ?: 1080
         val dns = sharedPreferences.getStringNotNull("dns_ip", "1.1.1.1")
+        val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
         val tun2socksConfig = """
         | misc:
@@ -200,13 +201,18 @@ class ByeDpiVpnService : LifecycleVpnService() {
             throw e
         }
 
-        val vpn = createBuilder(dns).establish()
+        val fd = createBuilder(dns, ipv6).establish()
             ?: throw IllegalStateException("VPN connection failed")
 
-        this.tunFd = vpn
+        this.tunFd = fd
 
-        Log.d(TAG, "Native tun2socks start")
-        TProxyService.TProxyStartService(configPath.absolutePath, vpn.fd)
+        TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
+
+        try {
+            File(cacheDir, "config.tmp").delete()
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Failed to delete config file", e)
+        }
 
         Log.i(TAG, "Tun2Socks started")
     }
@@ -215,15 +221,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
         Log.i(TAG, "Stopping tun2socks")
 
         TProxyService.TProxyStopService()
-        Log.d(TAG, "Native tun2socks stopped done")
 
         tunFd?.close() ?: Log.w(TAG, "VPN not running")
         tunFd = null
-        try {
-            File(cacheDir, "config.tmp").delete()
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Failed to delete config file", e)
-        }
+
         Log.i(TAG, "Tun2socks stopped")
     }
 
@@ -268,7 +269,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             ByeDpiVpnService::class.java,
         )
 
-    private fun createBuilder(dns: String): Builder {
+    private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
         builder.setSession("ByeDPI")
@@ -282,8 +283,13 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
 
         builder.addAddress("10.10.10.10", 32)
-        builder.addRoute("0.0.0.0", 0)
-        builder.addRoute("0:0:0:0:0:0:0:0", 0)
+            .addRoute("0.0.0.0", 0)
+
+        if (ipv6) {
+            builder.addAddress("fd00:::1", 128)
+                .addRoute("::", 0)
+        }
+
         if (dns.isNotBlank()) {
             builder.addDnsServer(dns)
         }

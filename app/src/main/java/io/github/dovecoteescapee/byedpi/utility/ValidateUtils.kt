@@ -3,7 +3,6 @@ package io.github.dovecoteescapee.byedpi.utility
 import android.net.InetAddresses
 import android.os.Build
 import android.util.Log
-import android.util.Patterns
 import android.widget.Toast
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
@@ -12,11 +11,14 @@ private const val TAG = "ValidateUtils"
 
 fun checkIp(ip: String): Boolean =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        InetAddresses.isNumericAddress(ip)
+        InetAddresses.isNumericAddress(ip) && InetAddresses.parseNumericAddress(ip).let {
+            !it.isAnyLocalAddress && !it.isLoopbackAddress
+        }
     } else {
         // This pattern doesn't not support IPv6
-        @Suppress("DEPRECATION")
-        Patterns.IP_ADDRESS.matcher(ip).matches()
+        // @Suppress("DEPRECATION")
+        // Patterns.IP_ADDRESS.matcher(ip).matches()
+        true
     }
 
 fun PreferenceFragmentCompat.setEditTestPreferenceListenerPort(key: String) {

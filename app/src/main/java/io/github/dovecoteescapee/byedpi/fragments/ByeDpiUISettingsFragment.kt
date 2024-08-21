@@ -79,6 +79,7 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val ttlFake = findPreferenceNotNull<EditTextPreference>("byedpi_fake_ttl")
         val fakeSni = findPreferenceNotNull<EditTextPreference>("byedpi_fake_sni")
         val oobData = findPreferenceNotNull<EditTextPreference>("byedpi_oob_data")
+        val udpFakeCount = findPreferenceNotNull<EditTextPreference>("byedpi_udp_fake_count")
         val hostMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_host_mixed_case")
         val domainMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_domain_mixed_case")
         val hostRemoveSpaces =
@@ -105,11 +106,17 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        val desyncAllProtocols =
+            !desyncHttp.isChecked && !desyncHttps.isChecked && !desyncUdp.isChecked
+
+        if (desyncAllProtocols || desyncUdp.isChecked) {
+            udpFakeCount.isVisible = true
+        } else {
+            udpFakeCount.isVisible = false
+        }
+
         when (desyncMethod) {
             None -> {
-                desyncHttp.isVisible = false
-                desyncHttps.isVisible = false
-                desyncUdp.isVisible = false
                 splitPosition.isVisible = false
                 splitAtHost.isVisible = false
                 ttlFake.isVisible = false
@@ -121,14 +128,8 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
             }
 
             else -> {
-                desyncHttp.isVisible = true
-                desyncHttps.isVisible = true
-                desyncUdp.isVisible = true
                 splitPosition.isVisible = true
                 splitAtHost.isVisible = true
-
-                val desyncAllProtocols =
-                    !desyncHttp.isChecked && !desyncHttps.isChecked && !desyncUdp.isChecked
 
                 if (desyncAllProtocols || desyncHttp.isChecked) {
                     hostMixedCase.isVisible = true

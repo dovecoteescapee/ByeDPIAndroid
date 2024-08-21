@@ -57,6 +57,8 @@ class ByeDpiProxyUIPreferences(
     tlsRecordSplitAtSni: Boolean? = null,
     hostsMode: HostsMode? = null,
     hosts: String? = null,
+    tcpFastOpen: Boolean? = null,
+    udpFakeCount: Int? = null,
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
     val port: Int = port ?: 1080
@@ -69,7 +71,7 @@ class ByeDpiProxyUIPreferences(
     val desyncHttps: Boolean = desyncHttps ?: true
     val desyncUdp: Boolean = desyncUdp ?: false
     val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
-    val splitPosition: Int = splitPosition ?: 3
+    val splitPosition: Int = splitPosition ?: 2
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
     val fakeSni: String = fakeSni ?: "www.iana.org"
@@ -86,6 +88,8 @@ class ByeDpiProxyUIPreferences(
     val hosts: String? =
         if (this.hostsMode == HostsMode.Disable) null
         else hosts?.trim()
+    val tcpFastOpen: Boolean = tcpFastOpen ?: false
+    val udpFakeCount: Int = udpFakeCount ?: 0
 
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
@@ -119,7 +123,9 @@ class ByeDpiProxyUIPreferences(
                 HostsMode.Whitelist -> preferences.getString("byedpi_hosts_whitelist", null)
                 else -> null
             }
-        }
+        },
+        tcpFastOpen = preferences.getBoolean("byedpi_tcp_fast_open", false),
+        udpFakeCount = preferences.getString("byedpi_udp_fake_count", null)?.toIntOrNull(),
     )
 
     enum class DesyncMethod {
