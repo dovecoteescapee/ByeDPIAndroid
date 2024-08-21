@@ -10,7 +10,7 @@
         android:icon="@drawable/ic_github_36">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="https://github.com/hufrea/byedpi/tree/main#readme-ov-file" />
+            android:data="@string/byedpi_docs" />
     </Preference>
 
     <androidx.preference.PreferenceCategory>

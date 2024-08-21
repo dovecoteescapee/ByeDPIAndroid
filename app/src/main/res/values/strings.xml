@@ -1,4 +1,5 @@
 <resources>
+    <string name="byedpi_docs">https://github.com/hufrea/byedpi/tree/v0.12#readme</string>
     <string name="app_name">ByeDPI</string>
     <string name="vpn_connect">Connect</string>
     <string name="vpn_disconnect">Disconnect</string>

@@ -3,7 +3,7 @@
 **English** | [Русский](README-ru.md)
 
 <div style="text-align: center;">
-  <img src=".github/images/logo.svg" width="100%" height="200px">
+  <img alt="ByeDPI logo" src=".github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
@@ -18,16 +18,19 @@ This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
     alt="Get it on GitHub"
     height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+    alt="Get it on IzzyOnDroid"
+    height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee.byedpi)
 
 ### Or use Obtainium
 
-1. Install [Obtainium](https://github.com/ImranR98/Obtainium?tab=readme-ov-file#installation)
+1. Install [Obtainium](https://github.com/ImranR98/Obtainium/blob/main/README.md#installation)
 2. Add the app by URL:  
    `https://github.com/dovecoteescapee/ByeDPIAndroid`
 
 ## Settings
 
-To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi#readme-ov-file).
+To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/tree/v0.12#readme).
 
 ## FAQ
 
@@ -38,10 +41,6 @@ You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAn
 ### Does the application require root access?
 
 No. All application features work without root.
-
-### How to get updates?
-
-Use [Obtainium](#or-use-obtainium).
 
 ### Is this a VPN?
 
@@ -65,9 +64,7 @@ None. The application does not send any data to a remote server. All traffic is 
 
 ### Are there any for other platforms?
 
-For Windows, there is [GoodByeDPI](https://github.com/ValdikSS/GoodbyeDPI), and for Linux and macOS [zapret](https://github.com/bol-van/zapret). Also, you can use the original [ByeDPI](https://github.com/hufrea/byedpi) to run a similar proxy on Windows, Linux, or macOS.
-
-[Other similar projects](https://github.com/ValdikSS/GoodbyeDPI?tab=readme-ov-file#similar-projects)
+[Similar projects](https://github.com/ValdikSS/GoodbyeDPI/blob/master/README.md#similar-projects))
 
 ### What is DPI?
 

@@ -3,7 +3,7 @@
 [English](README.md) | **Русский**
 
 <div style="text-align: center;">
-  <img src=".github/images/logo.svg" width="100%" height="200px">
+  <img alt="Логотип ByeDPI" src=".github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
@@ -17,16 +17,19 @@
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
     alt="Скачать с GitHub"
     height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+alt="Скачать с IzzyOnDroid"
+height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee.byedpi)
 
 ### Или используйте Obtainium
 
-1. Установите [Obtainium](https://github.com/ImranR98/Obtainium?tab=readme-ov-file#installation)
+1. Установите [Obtainium](https://github.com/ImranR98/Obtainium/blob/main/README.md#installation)
 2. Добавьте приложение по URL:  
    `https://github.com/dovecoteescapee/ByeDPIAndroid`
 
 ## Настройки
 
-Для обхода некоторых блокировок может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi#readme-ov-file).
+Для обхода некоторых блокировок может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi/tree/v0.12#readme).
 
 ## FAQ
 
@@ -37,10 +40,6 @@
 ### Приложение требует root-права?
 
 Нет. Все функции приложения работают без root-прав.
-
-### Как получать обновления?
-
-Используйте [Obtainium](#или-используйте-obtainium).
 
 ### Это VPN?
 
@@ -64,9 +63,7 @@
 
 ### А есть для других платформ?
 
-Для Windows существует [GoodByeDPI](https://github.com/ValdikSS/GoodbyeDPI), а для Linux и macOS [zapret](https://github.com/bol-van/zapret). Также, вы можете использовать оригинальный [ByeDPI](https://github.com/hufrea/byedpi) для запуска аналогичного прокси на Windows, Linux или macOS.
-
-[Другие аналоги](https://github.com/ValdikSS/GoodbyeDPI?tab=readme-ov-file#similar-projects)
+[Список аналогов](https://github.com/ValdikSS/GoodbyeDPI/blob/master/README.md#similar-projects)
 
 ### Что такое DPI?
 
