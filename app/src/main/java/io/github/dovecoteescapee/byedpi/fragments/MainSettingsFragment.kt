@@ -39,7 +39,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.main_settings, rootKey)
 
         setEditTextPreferenceListener("dns_ip") {
-            it.isBlank() || checkIp(it)
+            it.isBlank() || checkNotLocalIp(it)
         }
 
         findPreferenceNotNull<DropDownPreference>("app_theme")

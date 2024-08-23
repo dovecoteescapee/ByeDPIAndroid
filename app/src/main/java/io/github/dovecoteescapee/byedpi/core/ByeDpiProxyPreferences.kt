@@ -48,7 +48,7 @@ class ByeDpiProxyUIPreferences(
     splitAtHost: Boolean? = null,
     fakeTtl: Int? = null,
     fakeSni: String? = null,
-    oobData: String? = null,
+    oobChar: String? = null,
     hostMixedCase: Boolean? = null,
     domainMixedCase: Boolean? = null,
     hostRemoveSpaces: Boolean? = null,
@@ -59,6 +59,8 @@ class ByeDpiProxyUIPreferences(
     hosts: String? = null,
     tcpFastOpen: Boolean? = null,
     udpFakeCount: Int? = null,
+    dropSack: Boolean? = null,
+    byedpiFakeOffset: Int? = null,
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
     val port: Int = port ?: 1080
@@ -71,11 +73,11 @@ class ByeDpiProxyUIPreferences(
     val desyncHttps: Boolean = desyncHttps ?: true
     val desyncUdp: Boolean = desyncUdp ?: false
     val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
-    val splitPosition: Int = splitPosition ?: 2
+    val splitPosition: Int = splitPosition ?: 1
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
     val fakeSni: String = fakeSni ?: "www.iana.org"
-    val oobData: String = oobData ?: "a"
+    val oobChar: Byte = (oobChar ?: "a")[0].code.toByte()
     val hostMixedCase: Boolean = hostMixedCase ?: false
     val domainMixedCase: Boolean = domainMixedCase ?: false
     val hostRemoveSpaces: Boolean = hostRemoveSpaces ?: false
@@ -90,6 +92,8 @@ class ByeDpiProxyUIPreferences(
         else hosts?.trim()
     val tcpFastOpen: Boolean = tcpFastOpen ?: false
     val udpFakeCount: Int = udpFakeCount ?: 0
+    val dropSack: Boolean = dropSack ?: false
+    val fakeOffset: Int = byedpiFakeOffset ?: 0
 
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
@@ -107,7 +111,7 @@ class ByeDpiProxyUIPreferences(
         splitAtHost = preferences.getBoolean("byedpi_split_at_host", false),
         fakeTtl = preferences.getString("byedpi_fake_ttl", null)?.toIntOrNull(),
         fakeSni = preferences.getString("byedpi_fake_sni", null),
-        oobData = preferences.getString("byedpi_oob_data", null),
+        oobChar = preferences.getString("byedpi_oob_data", null),
         hostMixedCase = preferences.getBoolean("byedpi_host_mixed_case", false),
         domainMixedCase = preferences.getBoolean("byedpi_domain_mixed_case", false),
         hostRemoveSpaces = preferences.getBoolean("byedpi_host_remove_spaces", false),
@@ -126,6 +130,8 @@ class ByeDpiProxyUIPreferences(
         },
         tcpFastOpen = preferences.getBoolean("byedpi_tcp_fast_open", false),
         udpFakeCount = preferences.getString("byedpi_udp_fake_count", null)?.toIntOrNull(),
+        dropSack = preferences.getBoolean("byedpi_drop_sack", false),
+        byedpiFakeOffset = preferences.getString("byedpi_fake_offset", null)?.toIntOrNull(),
     )
 
     enum class DesyncMethod {
@@ -133,7 +139,8 @@ class ByeDpiProxyUIPreferences(
         Split,
         Disorder,
         Fake,
-        OOB;
+        OOB,
+        DISOOB;
 
         companion object {
             fun fromName(name: String): DesyncMethod {
@@ -143,6 +150,7 @@ class ByeDpiProxyUIPreferences(
                     "disorder" -> Disorder
                     "fake" -> Fake
                     "oob" -> OOB
+                    "disoob" -> DISOOB
                     else -> throw IllegalArgumentException("Unknown desync method: $name")
                 }
             }

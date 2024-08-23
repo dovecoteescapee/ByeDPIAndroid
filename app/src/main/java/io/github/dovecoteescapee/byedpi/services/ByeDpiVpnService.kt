@@ -208,12 +208,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
 
-        try {
-            File(cacheDir, "config.tmp").delete()
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Failed to delete config file", e)
-        }
-
         Log.i(TAG, "Tun2Socks started")
     }
 
@@ -221,6 +215,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
         Log.i(TAG, "Stopping tun2socks")
 
         TProxyService.TProxyStopService()
+
+        try {
+            File(cacheDir, "config.tmp").delete()
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Failed to delete config file", e)
+        }
 
         tunFd?.close() ?: Log.w(TAG, "VPN not running")
         tunFd = null

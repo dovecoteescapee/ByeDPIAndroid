@@ -13,7 +13,10 @@ void clear_params(void);
 
 char *ftob(const char *str, ssize_t *sl);
 
-char *parse_cform(const char *str, ssize_t *size);
+char *data_from_str(const char *str, ssize_t *size);
+
+size_t parse_cform(char *buffer, size_t blen,
+                   const char *str, size_t slen);
 
 struct mphdr *parse_hosts(char *buffer, size_t size);
 

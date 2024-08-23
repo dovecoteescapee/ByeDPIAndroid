@@ -69,7 +69,7 @@ class ByeDpiProxy {
                 splitAtHost = preferences.splitAtHost,
                 fakeTtl = preferences.fakeTtl,
                 fakeSni = preferences.fakeSni,
-                oobData = preferences.oobData,
+                oobChar = preferences.oobChar,
                 hostMixedCase = preferences.hostMixedCase,
                 domainMixedCase = preferences.domainMixedCase,
                 hostRemoveSpaces = preferences.hostRemoveSpaces,
@@ -80,6 +80,8 @@ class ByeDpiProxy {
                 hosts = preferences.hosts,
                 tcpFastOpen = preferences.tcpFastOpen,
                 udpFakeCount = preferences.udpFakeCount,
+                dropSack = preferences.dropSack,
+                fakeOffset = preferences.fakeOffset,
             )
         }
 
@@ -101,7 +103,7 @@ class ByeDpiProxy {
         splitAtHost: Boolean,
         fakeTtl: Int,
         fakeSni: String,
-        oobData: String,
+        oobChar: Byte,
         hostMixedCase: Boolean,
         domainMixedCase: Boolean,
         hostRemoveSpaces: Boolean,
@@ -112,6 +114,8 @@ class ByeDpiProxy {
         hosts: String?,
         tcpFastOpen: Boolean,
         udpFakeCount: Int,
+        dropSack: Boolean,
+        fakeOffset: Int,
     ): Int
 
     private external fun jniStartProxy(fd: Int): Int

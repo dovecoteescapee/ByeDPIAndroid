@@ -15,9 +15,10 @@ void reset_params(void) {
     params = default_params;
 }
 
-extern const struct option options[35];
+extern const struct option options[38];
 
-int parse_args(int argc, char **argv) {
+int parse_args(int argc, char **argv)
+{
     int optc = sizeof(options)/sizeof(*options);
     for (int i = 0, e = optc; i < e; i++)
         optc += options[i].has_arg;
@@ -50,8 +51,9 @@ int parse_args(int argc, char **argv) {
 
     optind = optreset = 1;
 
-    while (!invalid && (rez = getopt_long_only(
+    while (!invalid && (rez = getopt_long(
             argc, argv, opt, options, 0)) != -1) {
+
         switch (rez) {
 
             case 'N':
@@ -63,6 +65,15 @@ int parse_args(int argc, char **argv) {
             case 'U':
                 params.udp = 0;
                 break;
+
+//            case 'h':
+//                printf(help_text);
+//                reset_params();
+//                return 0;
+//            case 'v':
+//                printf("%s\n", VERSION);
+//                reset_params();
+//                return 0;
 
             case 'i':
                 if (get_addr(optarg,
@@ -119,10 +130,6 @@ int parse_args(int argc, char **argv) {
                     reset_params();
                     return -1;
                 }
-                if (!optarg) {
-                    dp->detect |= DETECT_TORST;
-                    break;
-                }
                 end = optarg;
                 while (end && !invalid) {
                     switch (*end) {
@@ -132,14 +139,9 @@ int parse_args(int argc, char **argv) {
                         case 'r':
                             dp->detect |= DETECT_HTTP_LOCAT;
                             break;
-                        case 'c':
-                            dp->detect |= DETECT_HTTP_CLERR;
-                            break;
-                        case 's':
-                            dp->detect |= DETECT_TLS_INVSID;
-                            break;
                         case 'a':
-                            dp->detect |= DETECT_TLS_ALERT;
+                        case 's':
+                            dp->detect |= DETECT_TLS_ERR;
                             break;
                         case 'n':
                             break;
@@ -161,8 +163,12 @@ int parse_args(int argc, char **argv) {
                 break;
 
             case 'T':;
+#ifdef __linux__
                 float f = strtof(optarg, &end);
                 val = (long)(f * 1000);
+#else
+                val = strtol(optarg, &end, 0);
+#endif
                 if (val <= 0 || val > UINT_MAX || *end)
                     invalid = 1;
                 else
@@ -212,6 +218,7 @@ int parse_args(int argc, char **argv) {
             case 's':
             case 'd':
             case 'o':
+            case 'q':
             case 'f':
                 ;
                 struct part *part = add((void *)&dp->parts,
@@ -230,6 +237,8 @@ int parse_args(int argc, char **argv) {
                     case 'd': part->m = DESYNC_DISORDER;
                         break;
                     case 'o': part->m = DESYNC_OOB;
+                        break;
+                    case 'q': part->m = DESYNC_DISOOB;
                         break;
                     case 'f': part->m = DESYNC_FAKE;
                 }
@@ -263,13 +272,21 @@ int parse_args(int argc, char **argv) {
                 dp->md5sig = 1;
                 break;
 
+            case 'O':
+                val = strtol(optarg, &end, 0);
+                if (val <= 0 || *end)
+                    invalid = 1;
+                else
+                    dp->fake_offset = val;
+                break;
+
             case 'n':
                 if (change_tls_sni(optarg, fake_tls.data, fake_tls.size)) {
-                    fprintf(stderr, "error chsni\n");
+                    perror("change_tls_sni");
                     reset_params();
                     return -1;
                 }
-                printf("sni: %s\n", optarg);
+                LOG(LOG_S, "sni: %s", optarg);
                 break;
 
             case 'l':
@@ -284,14 +301,11 @@ int parse_args(int argc, char **argv) {
                 break;
 
             case 'e':
-                if (oob_data.data != oob_char) {
-                    continue;
-                }
-                oob_data.data = ftob(optarg, &oob_data.size);
-                if (!oob_data.data) {
-                    uniperror("read/parse");
+                val = parse_cform(dp->oob_char, 1, optarg, strlen(optarg));
+                if (val != 1) {
                     invalid = 1;
                 }
+                else dp->oob_char[1] = 1;
                 break;
 
             case 'M':
@@ -366,6 +380,10 @@ int parse_args(int argc, char **argv) {
                 }
                 break;
 
+            case 'Y':
+                dp->drop_sack = 1;
+                break;
+
             case 'w': //
                 params.sfdelay = strtol(optarg, &end, 0);
                 if (params.sfdelay < 0 || optarg == end
@@ -376,9 +394,11 @@ int parse_args(int argc, char **argv) {
             case 'W':
                 params.wait_send = 0;
                 break;
+#ifdef __linux__
             case 'P':
                 params.protect_path = optarg;
                 break;
+#endif
             case 0:
                 break;
 
@@ -387,13 +407,13 @@ int parse_args(int argc, char **argv) {
                 return -1;
 
             default:
-                printf("?: %c\n", rez);
+                LOG(LOG_S, "Unknown option: -%c", rez);
                 reset_params();
                 return -1;
         }
     }
     if (invalid) {
-        fprintf(stderr, "invalid value: -%c %s\n", rez, optarg);
+        LOG(LOG_S, "invalid value: -%c %s", rez, optarg);
         reset_params();
         return -1;
     }

@@ -29,7 +29,7 @@ height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee
 
 ## Настройки
 
-Для обхода некоторых блокировок может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi/tree/v0.12#readme).
+Для обхода некоторых блокировок может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
 
 ## FAQ
 

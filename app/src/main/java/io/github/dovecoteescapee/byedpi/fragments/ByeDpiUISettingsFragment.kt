@@ -78,7 +78,8 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val splitAtHost = findPreferenceNotNull<CheckBoxPreference>("byedpi_split_at_host")
         val ttlFake = findPreferenceNotNull<EditTextPreference>("byedpi_fake_ttl")
         val fakeSni = findPreferenceNotNull<EditTextPreference>("byedpi_fake_sni")
-        val oobData = findPreferenceNotNull<EditTextPreference>("byedpi_oob_data")
+        val fakeOffset = findPreferenceNotNull<EditTextPreference>("byedpi_fake_offset")
+        val oobChar = findPreferenceNotNull<EditTextPreference>("byedpi_oob_data")
         val udpFakeCount = findPreferenceNotNull<EditTextPreference>("byedpi_udp_fake_count")
         val hostMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_host_mixed_case")
         val domainMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_domain_mixed_case")
@@ -89,81 +90,36 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
             findPreferenceNotNull<EditTextPreference>("byedpi_tlsrec_position")
         val splitTlsRecAtSni = findPreferenceNotNull<CheckBoxPreference>("byedpi_tlsrec_at_sni")
 
-        when (hostsMode) {
-            Disable -> {
-                hostsBlacklist.isVisible = false
-                hostsWhitelist.isVisible = false
-            }
+        hostsBlacklist.isVisible = hostsMode == Blacklist
+        hostsWhitelist.isVisible = hostsMode == Whitelist
 
-            Blacklist -> {
-                hostsBlacklist.isVisible = true
-                hostsWhitelist.isVisible = false
-            }
+        val desyncEnabled = desyncMethod != None
+        splitPosition.isVisible = desyncEnabled
+        splitAtHost.isVisible = desyncEnabled
 
-            Whitelist -> {
-                hostsBlacklist.isVisible = false
-                hostsWhitelist.isVisible = true
-            }
-        }
+        val isFake = desyncMethod == Fake
+        ttlFake.isVisible = isFake
+        fakeSni.isVisible = isFake
+        fakeOffset.isVisible = isFake
+
+        val isOob = desyncMethod == OOB || desyncMethod == DISOOB
+        oobChar.isVisible = isOob
 
         val desyncAllProtocols =
             !desyncHttp.isChecked && !desyncHttps.isChecked && !desyncUdp.isChecked
 
-        if (desyncAllProtocols || desyncUdp.isChecked) {
-            udpFakeCount.isVisible = true
-        } else {
-            udpFakeCount.isVisible = false
-        }
+        val desyncHttpEnabled = desyncAllProtocols || desyncHttp.isChecked
+        hostMixedCase.isEnabled = desyncHttpEnabled
+        domainMixedCase.isEnabled = desyncHttpEnabled
+        hostRemoveSpaces.isEnabled = desyncHttpEnabled
 
-        when (desyncMethod) {
-            None -> {
-                splitPosition.isVisible = false
-                splitAtHost.isVisible = false
-                ttlFake.isVisible = false
-                fakeSni.isVisible = false
-                oobData.isVisible = false
-                hostMixedCase.isVisible = false
-                domainMixedCase.isVisible = false
-                hostRemoveSpaces.isVisible = false
-            }
+        val desyncUdpEnabled = desyncAllProtocols || desyncUdp.isChecked
+        udpFakeCount.isEnabled = desyncUdpEnabled
 
-            else -> {
-                splitPosition.isVisible = true
-                splitAtHost.isVisible = true
-
-                if (desyncAllProtocols || desyncHttp.isChecked) {
-                    hostMixedCase.isVisible = true
-                    domainMixedCase.isVisible = true
-                    hostRemoveSpaces.isVisible = true
-                } else {
-                    hostMixedCase.isVisible = false
-                    domainMixedCase.isVisible = false
-                    hostRemoveSpaces.isVisible = false
-                }
-
-                when (desyncMethod) {
-                    Fake -> {
-                        ttlFake.isVisible = true
-                        fakeSni.isVisible = true
-                        oobData.isVisible = false
-                    }
-
-                    OOB -> {
-                        ttlFake.isVisible = false
-                        fakeSni.isVisible = false
-                        oobData.isVisible = true
-                    }
-
-                    else -> {
-                        ttlFake.isVisible = false
-                        fakeSni.isVisible = false
-                        oobData.isVisible = false
-                    }
-                }
-            }
-        }
-
-        splitTlsRecPosition.isVisible = splitTlsRec.isChecked
-        splitTlsRecAtSni.isVisible = splitTlsRec.isChecked
+        val desyncHttpsEnabled = desyncAllProtocols || desyncHttps.isChecked
+        splitTlsRec.isEnabled = desyncHttpsEnabled
+        val tlsRecEnabled = desyncHttpsEnabled && splitTlsRec.isChecked
+        splitTlsRecPosition.isEnabled = tlsRecEnabled
+        splitTlsRecAtSni.isEnabled = tlsRecEnabled
     }
 }

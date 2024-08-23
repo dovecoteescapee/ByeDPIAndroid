@@ -26,6 +26,7 @@
         <item name="disorder">Disorder</item>
         <item name="fake">Fake</item>
         <item name="oob">Out-of-band</item>
+        <item name="oob">Disordered out-of-band</item>
     </array>
     <array name="byedpi_desync_methods_entries">
         <item name="none">none</item>
@@ -33,6 +34,7 @@
         <item name="disorder">disorder</item>
         <item name="fake">fake</item>
         <item name="oob">oob</item>
+        <item name="oob">disoob</item>
     </array>
 
     <array name="byedpi_hosts_modes">

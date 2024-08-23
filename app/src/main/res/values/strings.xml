@@ -1,5 +1,5 @@
 <resources>
-    <string name="byedpi_docs">https://github.com/hufrea/byedpi/tree/v0.12#readme</string>
+    <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/v0.13/README.md</string>
     <string name="app_name">ByeDPI</string>
     <string name="vpn_connect">Connect</string>
     <string name="vpn_disconnect">Disconnect</string>
@@ -65,4 +65,11 @@
     <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
     <string name="byedpi_udp_fake_count">UDP fake count</string>
     <string name="ipv6_setting">IPv6</string>
+    <string name="byedpi_fake_offset_setting">Fake offset</string>
+    <string name="byedpi_drop_sack_setting">Drop SACK</string>
+    <string name="desync_udp_category">UDP</string>
+    <string name="desync_http_category">HTTP</string>
+    <string name="desync_https_category">HTTPS</string>
+    <string name="byedpi_protocols_category">Protocols</string>
+    <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
 </resources>

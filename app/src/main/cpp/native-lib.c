@@ -17,6 +17,7 @@ const enum demode DESYNC_METHODS[] = {
     DESYNC_DISORDER,
     DESYNC_FAKE,
     DESYNC_OOB,
+    DESYNC_DISOOB,
 };
 
 enum hosts_mode {
@@ -81,7 +82,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jboolean split_at_host,
         jint fake_ttl,
         jstring fake_sni,
-        jstring custom_oob_data,
+        jbyte custom_oob_char,
         jboolean host_mixed_case,
         jboolean domain_mixed_case,
         jboolean host_remove_spaces,
@@ -91,7 +92,9 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jint hosts_mode,
         jstring hosts,
         jboolean tfo,
-        jint udp_fake_count) {
+        jint udp_fake_count,
+        jboolean drop_sack,
+        jint fake_offset) {
     struct sockaddr_ina s;
 
     const char *address = (*env)->GetStringUTFChars(env, ip, 0);
@@ -135,7 +138,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         }
 
         const char *str = (*env)->GetStringUTFChars(env, hosts, 0);
-        dp->file_ptr = parse_cform(str, &dp->file_size);
+        dp->file_ptr = data_from_str(str, &dp->file_size);
         (*env)->ReleaseStringUTFChars(env, hosts, str);
         dp->hosts = parse_hosts(dp->file_ptr, dp->file_size);
         if (!dp->hosts) {
@@ -158,7 +161,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
 
     if (hosts_mode == HOSTS_BLACKLIST) {
         const char *str = (*env)->GetStringUTFChars(env, hosts, 0);
-        dp->file_ptr = parse_cform(str, &dp->file_size);
+        dp->file_ptr = data_from_str(str, &dp->file_size);
         (*env)->ReleaseStringUTFChars(env, hosts, str);
         dp->hosts = parse_hosts(dp->file_ptr, dp->file_size);
         if (!dp->hosts) {
@@ -170,6 +173,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
 
     dp->ttl = fake_ttl;
     dp->udp_fake_count = udp_fake_count;
+    dp->drop_sack = drop_sack;
     dp->proto =
             IS_HTTP * desync_http |
             IS_HTTPS * desync_https |
@@ -216,6 +220,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     }
 
     if (mode == DESYNC_FAKE) {
+        dp->fake_offset = fake_offset;
+
         const char *sni = (*env)->GetStringUTFChars(env, fake_sni, 0);
         LOG(LOG_S, "fake_sni: %s", sni);
         res = change_tls_sni(sni, fake_tls.data, fake_tls.size);
@@ -227,17 +233,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
     }
 
     if (mode == DESYNC_OOB) {
-        const char *oob = (*env)->GetStringUTFChars(env, custom_oob_data, 0);
-        const size_t oob_len = strlen(oob);
-
-        oob_data.size = oob_len;
-        oob_data.data = malloc(oob_len);
-        if (oob_data.data == NULL) {
-            uniperror("malloc");
-            return -1;
-        }
-        memcpy(oob_data.data, oob, oob_len);
-        (*env)->ReleaseStringUTFChars(env, custom_oob_data, oob);
+        dp->oob_char[0] = custom_oob_char;
+        dp->oob_char[1] = 1;
     }
 
     if (dp->proto) {

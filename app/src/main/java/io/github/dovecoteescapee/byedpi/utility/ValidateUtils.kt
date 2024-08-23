@@ -11,6 +11,16 @@ private const val TAG = "ValidateUtils"
 
 fun checkIp(ip: String): Boolean =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        InetAddresses.isNumericAddress(ip)
+    } else {
+        // This pattern doesn't not support IPv6
+        // @Suppress("DEPRECATION")
+        // Patterns.IP_ADDRESS.matcher(ip).matches()
+        true
+    }
+
+fun checkNotLocalIp(ip: String): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         InetAddresses.isNumericAddress(ip) && InetAddresses.parseNumericAddress(ip).let {
             !it.isAnyLocalAddress && !it.isLoopbackAddress
         }
