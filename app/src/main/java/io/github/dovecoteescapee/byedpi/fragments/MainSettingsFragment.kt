@@ -8,6 +8,8 @@ import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
+import io.github.dovecoteescapee.byedpi.mod.AccessibilityUtils
+import io.github.dovecoteescapee.byedpi.mod.AutoStartAccessibilityService
 import io.github.dovecoteescapee.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
@@ -68,17 +70,40 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
 
+        // mod
+        val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
+        updateAccessibilityStatus(accessibilityStatusPref)
+
         updatePreferences()
     }
 
     override fun onResume() {
         super.onResume()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
+
+        // mod
+        val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
+        updateAccessibilityStatus(accessibilityStatusPref)
     }
 
     override fun onPause() {
         super.onPause()
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+    }
+
+    // mod
+    private fun updateAccessibilityStatus(preference: Preference?) {
+        preference?.let {
+            val isEnabled = AccessibilityUtils.isAccessibilityServiceEnabled(
+                requireContext(),
+                AutoStartAccessibilityService::class.java
+            )
+            it.summary = if (isEnabled) {
+                getString(R.string.accessibility_service_enabled)
+            } else {
+                getString(R.string.accessibility_service_disabled)
+            }
+        }
     }
 
     private fun updatePreferences() {

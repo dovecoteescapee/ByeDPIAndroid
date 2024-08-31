@@ -1,0 +1,9 @@
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:packageNames="com.your.package.name"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFlags="flagDefault"
+    android:accessibilityFeedbackType="feedbackSpoken"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="true"
+    android:settingsActivity="io.github.dovecoteescapee.byedpi.SettingsActivity" />

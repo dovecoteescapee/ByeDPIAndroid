@@ -10,6 +10,8 @@ import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -159,6 +161,28 @@ class MainActivity : AppCompatActivity() {
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
+
+        // mod
+        val isAutoStart = intent.getBooleanExtra("isAutoStart", false)
+        val autoConnect = getPreferences().getBoolean("auto_connect", false)
+        val autoHide = getPreferences().getBoolean("auto_hide", false)
+
+        if(autoConnect) {
+            this.start()
+        }
+
+        if (autoHide && isAutoStart) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                minimizeApp()
+            }, 1000)
+        }
+    }
+
+    private fun minimizeApp() {
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
     }
 
     override fun onResume() {
