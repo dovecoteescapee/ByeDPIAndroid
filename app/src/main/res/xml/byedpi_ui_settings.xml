@@ -58,13 +58,13 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_desync">
 
-        <DropDownPreference
+        <ListPreference
             android:key="byedpi_hosts_mode"
             android:title="@string/byedpi_hosts_mode_setting"
             android:entries="@array/byedpi_hosts_modes"
             android:entryValues="@array/byedpi_hosts_modes_entries"
             android:defaultValue="disable"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_hosts_blacklist"
@@ -87,13 +87,13 @@
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
 
-        <DropDownPreference
+        <ListPreference
             android:key="byedpi_desync_method"
             android:title="@string/byedpi_desync_method_setting"
             android:entries="@array/byedpi_desync_methods"
             android:entryValues="@array/byedpi_desync_methods_entries"
             android:defaultValue="disorder"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_split_position"

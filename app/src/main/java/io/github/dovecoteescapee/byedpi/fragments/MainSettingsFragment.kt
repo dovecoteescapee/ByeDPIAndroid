@@ -44,7 +44,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             it.isBlank() || checkNotLocalIp(it)
         }
 
-        findPreferenceNotNull<DropDownPreference>("app_theme")
+        findPreferenceNotNull<ListPreference>("app_theme")
             .setOnPreferenceChangeListener { _, newValue ->
                 setTheme(newValue as String)
                 true

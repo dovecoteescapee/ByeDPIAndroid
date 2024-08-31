@@ -1,12 +1,12 @@
 <resources>
     <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/v0.13/README.md</string>
-    <string name="app_name">ByeDPI Авто</string>
+    <string name="app_name">ByeDPI MOD</string>
     <string name="vpn_connect">Подключить</string>
     <string name="vpn_disconnect">Отключить</string>
-    <string name="vpn_connected">Подключено</string>
-    <string name="vpn_disconnected">Отключено</string>
-    <string name="proxy_up">Прокси подключен</string>
-    <string name="proxy_down">Прокси отключен</string>
+    <string name="vpn_connected">Подключено (VPN)</string>
+    <string name="vpn_disconnected">Отключено (VPN)</string>
+    <string name="proxy_up">Подключено (Proxy)</string>
+    <string name="proxy_down">Отключено (Proxy)</string>
     <string name="proxy_start">Старт</string>
     <string name="proxy_stop">Стоп</string>
     <string name="settings">Настройки</string>

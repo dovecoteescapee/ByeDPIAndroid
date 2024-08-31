@@ -7,21 +7,21 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/general_category">
 
-        <DropDownPreference
+        <ListPreference
             android:key="app_theme"
             android:title="@string/theme_settings"
             android:entries="@array/themes"
             android:entryValues="@array/themes_entries"
-            android:defaultValue="system"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s"
+            android:defaultValue="system" />
 
-        <DropDownPreference
+        <ListPreference
             android:key="byedpi_mode"
             android:title="@string/mode_setting"
             android:entries="@array/byedpi_modes"
             android:entryValues="@array/byedpi_modes_entries"
-            android:defaultValue="vpn"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s"
+            android:defaultValue="vpn" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
