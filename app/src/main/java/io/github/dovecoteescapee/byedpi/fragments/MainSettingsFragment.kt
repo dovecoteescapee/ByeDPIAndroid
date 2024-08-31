@@ -1,6 +1,8 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -74,6 +76,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
         updateAccessibilityStatus(accessibilityStatusPref)
 
+        val (appNames, packageNames) = getInstalledApps(requireContext())
+
+        val multiSelectListPreference = findPreference<MultiSelectListPreference>("selected_apps")
+        multiSelectListPreference?.entries = appNames
+        multiSelectListPreference?.entryValues = packageNames
+
         updatePreferences()
     }
 
@@ -91,6 +99,35 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
     }
 
+    private fun updatePreferences() {
+        val mode = findPreferenceNotNull<ListPreference>("byedpi_mode")
+            .value.let { Mode.fromString(it) }
+        val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
+        val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
+
+        // mod
+        val applist_type = findPreferenceNotNull<ListPreference>("applist_type")
+        val selected_apps = findPreferenceNotNull<MultiSelectListPreference>("selected_apps")
+
+        when (mode) {
+            Mode.VPN -> {
+                dns.isVisible = true
+                ipv6.isVisible = true
+                // mod
+                applist_type.isVisible = true
+                selected_apps.isVisible = true
+            }
+
+            Mode.Proxy -> {
+                dns.isVisible = false
+                ipv6.isVisible = false
+                // mod
+                applist_type.isVisible = false
+                selected_apps.isVisible = false
+            }
+        }
+    }
+
     // mod
     private fun updateAccessibilityStatus(preference: Preference?) {
         preference?.let {
@@ -106,22 +143,33 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun updatePreferences() {
-        val mode = findPreferenceNotNull<ListPreference>("byedpi_mode")
-            .value.let { Mode.fromString(it) }
-        val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
-        val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
+    private fun getInstalledApps(context: Context): Pair<Array<String>, Array<String>> {
+        val pm = context.packageManager
+        val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
 
-        when (mode) {
-            Mode.VPN -> {
-                dns.isVisible = true
-                ipv6.isVisible = true
+        val appNamePackages = mutableListOf<Pair<String, String>>()
+
+        for (app in apps) {
+            val appName = pm.getApplicationLabel(app).toString()
+            val packageName = app.packageName
+
+            val canBeDisabled = try {
+                val isEnabled = pm.getApplicationEnabledSetting(packageName) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                isEnabled
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
             }
 
-            Mode.Proxy -> {
-                dns.isVisible = false
-                ipv6.isVisible = false
+            if (appName.isNotBlank() && appName != packageName && canBeDisabled) {
+                appNamePackages.add(Pair(appName, packageName))
             }
         }
+
+        appNamePackages.sortBy { it.first }
+
+        val sortedAppNames = appNamePackages.map { it.first }.toTypedArray()
+        val sortedPackageNames = appNamePackages.map { it.second }.toTypedArray()
+
+        return Pair(sortedAppNames, sortedPackageNames)
     }
 }

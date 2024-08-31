@@ -34,6 +34,18 @@
             android:title="@string/ipv6_setting"
             android:defaultValue="false" />
 
+        <ListPreference
+            android:key="applist_type"
+            android:title="@string/applist_setting"
+            android:entries="@array/applist_types"
+            android:entryValues="@array/applist_types_entries"
+            android:summary="%s"
+            android:defaultValue="disable" />
+
+        <MultiSelectListPreference
+            android:key="selected_apps"
+            android:title="@string/apps_select" />
+
     </androidx.preference.PreferenceCategory>
 
     <!--mod-->
@@ -47,7 +59,7 @@
         <SwitchPreference
             android:key="auto_connect"
             android:title="@string/autoconnect_settings"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <SwitchPreference
             android:key="auto_hide"

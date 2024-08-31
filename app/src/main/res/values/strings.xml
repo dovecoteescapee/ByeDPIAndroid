@@ -80,4 +80,6 @@
     <string name="accessibility_service_status">Статус автозапуска</string>
     <string name="accessibility_service_enabled">Служба активна, автозапуск работает</string>
     <string name="accessibility_service_disabled">Для работы автозапуска активируйте службу специальных возможностей</string>
+    <string name="applist_setting">Фильтр приложений</string>
+    <string name="apps_select">Выбрать приложения</string>
 </resources>

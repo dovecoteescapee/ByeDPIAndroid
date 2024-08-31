@@ -21,3 +21,8 @@ fun SharedPreferences.mode(): Mode =
 
 fun <T : Preference> PreferenceFragmentCompat.findPreferenceNotNull(key: CharSequence): T =
     findPreference(key) ?: throw IllegalStateException("Preference $key not found")
+
+// mod
+fun SharedPreferences.getSelectedApps(): List<String> {
+    return getStringSet("selected_apps", emptySet())?.toList() ?: emptyList()
+}
