@@ -42,7 +42,7 @@
             android:summary="%s"
             android:defaultValue="disable" />
 
-        <MultiSelectListPreference
+        <Preference
             android:key="selected_apps"
             android:title="@string/apps_select" />
 

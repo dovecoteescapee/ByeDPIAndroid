@@ -1,8 +1,6 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
-import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -76,11 +74,13 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
         updateAccessibilityStatus(accessibilityStatusPref)
 
-        val (appNames, packageNames) = getInstalledApps(requireContext())
-
-        val multiSelectListPreference = findPreference<MultiSelectListPreference>("selected_apps")
-        multiSelectListPreference?.entries = appNames
-        multiSelectListPreference?.entryValues = packageNames
+        findPreference<Preference>("selected_apps")?.setOnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.settings, AppSelectionFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
 
         updatePreferences()
     }
@@ -107,15 +107,28 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         // mod
         val applist_type = findPreferenceNotNull<ListPreference>("applist_type")
-        val selected_apps = findPreferenceNotNull<MultiSelectListPreference>("selected_apps")
+        val selected_apps = findPreferenceNotNull<Preference>("selected_apps")
 
         when (mode) {
             Mode.VPN -> {
                 dns.isVisible = true
                 ipv6.isVisible = true
                 // mod
-                applist_type.isVisible = true
-                selected_apps.isVisible = true
+                when (applist_type.value) {
+                    "disable" -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = false
+                    }
+                    "blacklist", "whitelist" -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = true
+                    }
+                    else -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = false
+                        Log.w(TAG, "Unexpected applist_type value: ${applist_type.value}")
+                    }
+                }
             }
 
             Mode.Proxy -> {
@@ -141,35 +154,5 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 getString(R.string.accessibility_service_disabled)
             }
         }
-    }
-
-    private fun getInstalledApps(context: Context): Pair<Array<String>, Array<String>> {
-        val pm = context.packageManager
-        val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
-
-        val appNamePackages = mutableListOf<Pair<String, String>>()
-
-        for (app in apps) {
-            val appName = pm.getApplicationLabel(app).toString()
-            val packageName = app.packageName
-
-            val canBeDisabled = try {
-                val isEnabled = pm.getApplicationEnabledSetting(packageName) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-                isEnabled
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
-
-            if (appName.isNotBlank() && appName != packageName && canBeDisabled) {
-                appNamePackages.add(Pair(appName, packageName))
-            }
-        }
-
-        appNamePackages.sortBy { it.first }
-
-        val sortedAppNames = appNamePackages.map { it.first }.toTypedArray()
-        val sortedPackageNames = appNamePackages.map { it.second }.toTypedArray()
-
-        return Pair(sortedAppNames, sortedPackageNames)
     }
 }
