@@ -36,7 +36,7 @@
     <string name="byedpi_tlsrec_enabled_setting">Разделить TLS запись</string>
     <string name="byedpi_tlsrec_position_setting">Позиция разделения TLS записи</string>
     <string name="byedpi_tlsrec_at_sni_setting">Разделить TLS запись в SNI</string>
-    <string name="version">Autostart mod by romanvht for 4pda</string>
+    <string name="version">ByeByeDPI</string>
     <string name="source_code_link">Исходный код</string>
     <string name="byedpi_readme_link">Что все это значит?</string>
     <string name="failed_to_start">Не удалось запустить %1$s</string>
