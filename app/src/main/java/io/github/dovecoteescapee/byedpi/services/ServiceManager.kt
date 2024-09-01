@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import io.github.dovecoteescapee.byedpi.data.Mode
 import io.github.dovecoteescapee.byedpi.data.START_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
+import io.github.dovecoteescapee.byedpi.utility.getPreferences
 
 object ServiceManager {
     private val TAG: String = ServiceManager::class.java.simpleName
@@ -27,6 +29,7 @@ object ServiceManager {
                 ContextCompat.startForegroundService(context, intent)
             }
         }
+        context.getPreferences().edit { putBoolean("was_running", true) }
     }
 
     fun stop(context: Context) {
@@ -46,5 +49,6 @@ object ServiceManager {
                 ContextCompat.startForegroundService(context, intent)
             }
         }
+        context.getPreferences().edit { putBoolean("was_running", false) }
     }
 }
