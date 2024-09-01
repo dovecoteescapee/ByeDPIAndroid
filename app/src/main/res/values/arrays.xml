@@ -47,4 +47,13 @@
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
     </array>
+
+    <array name="vpn_filtering_modes">
+        <item name="blacklist">Blacklist apps</item>
+        <item name="whitelist">Whilelist apps</item>
+    </array>
+    <array name="vpn_filtering_modes_entries">
+        <item name="blacklist">blacklist</item>
+        <item name="whitelist">whitelist</item>
+    </array>
 </resources>

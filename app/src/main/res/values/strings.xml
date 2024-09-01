@@ -72,4 +72,8 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
+    <string name="vpn_category">VPN</string>
+    <string name="vpn_filter_mode">Apps filtering mode</string>
+    <string name="vpn_filtered_apps">Filtered applications</string>
+    <string name="search">Search</string>
 </resources>

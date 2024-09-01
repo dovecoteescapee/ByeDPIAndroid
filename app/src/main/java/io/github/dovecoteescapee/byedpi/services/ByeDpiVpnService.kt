@@ -3,6 +3,7 @@ package io.github.dovecoteescapee.byedpi.services
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -297,7 +298,27 @@ class ByeDpiVpnService : LifecycleVpnService() {
             builder.setMetered(false)
         }
 
-        builder.addDisallowedApplication(applicationContext.packageName)
+        val filter = getPreferences().getStringSet("vpn_filtered_apps", emptySet())!!
+        when (val filterMode = getPreferences().getString("vpn_filter_mode", "blacklist")) {
+            "blacklist" -> {
+                filter.forEach {
+                    try {
+                        builder.addDisallowedApplication(it)
+                    } catch (ignore: PackageManager.NameNotFoundException) {}
+                }
+                builder.addDisallowedApplication(applicationContext.packageName)
+            }
+            "whitelist" -> {
+                filter.forEach {
+                    try {
+                        builder.addAllowedApplication(it)
+                    } catch (ignore: PackageManager.NameNotFoundException) {}
+                }
+            }
+            else -> {
+                Log.w(TAG, "Invalid VPN filter mode: $filterMode")
+            }
+        }
 
         return builder
     }

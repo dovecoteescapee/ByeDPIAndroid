@@ -73,6 +73,7 @@ dependencies {
     implementation("com.takisoft.preferencex:preferencex:1.1.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-service:2.8.4")
     testImplementation("junit:junit:4.13.2")
