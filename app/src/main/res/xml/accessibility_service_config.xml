@@ -1,6 +1,6 @@
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/accessibility_service_description"
-    android:packageNames="com.your.package.name"
+    android:packageNames="io.github.dovecoteescapee.byedpi"
     android:accessibilityEventTypes="typeAllMask"
     android:accessibilityFlags="flagDefault"
     android:accessibilityFeedbackType="feedbackSpoken"

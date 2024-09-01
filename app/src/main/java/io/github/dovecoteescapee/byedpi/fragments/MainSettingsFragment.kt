@@ -1,7 +1,9 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
@@ -72,9 +74,14 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         // mod
         val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
-        updateAccessibilityStatus(accessibilityStatusPref)
+        accessibilityStatusPref?.setOnPreferenceClickListener {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            startActivity(intent)
+            true
+        }
 
-        findPreference<Preference>("selected_apps")?.setOnPreferenceClickListener {
+        val selectedApps = findPreference<Preference>("selected_apps")
+        selectedApps?.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.settings, AppSelectionFragment())
                 .addToBackStack(null)
@@ -82,6 +89,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        updateAccessibilityStatus(accessibilityStatusPref)
         updatePreferences()
     }
 
