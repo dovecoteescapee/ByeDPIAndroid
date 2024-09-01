@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ByeDPI.V27" parent="Theme.ByeDPI.Base">
+        <item name="android:windowLightNavigationBar">@bool/is_light_theme</item>
+    </style>
+    <style name="Theme.ByeDPI" parent="Theme.ByeDPI.V27" />
+</resources>
