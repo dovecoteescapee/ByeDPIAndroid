@@ -61,11 +61,6 @@
             android:title="@string/autoconnect_settings"
             android:defaultValue="false" />
 
-        <SwitchPreference
-            android:key="auto_hide"
-            android:title="@string/autohide_settings"
-            android:defaultValue="false" />
-
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

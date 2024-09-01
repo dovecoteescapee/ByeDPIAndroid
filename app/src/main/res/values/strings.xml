@@ -1,6 +1,6 @@
 <resources>
     <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/v0.13/README.md</string>
-    <string name="app_name">ByeDPI MOD</string>
+    <string name="app_name">ByeByeDPI</string>
     <string name="vpn_connect">Подключить</string>
     <string name="vpn_disconnect">Отключить</string>
     <string name="vpn_connected">Подключено (VPN)</string>
@@ -42,7 +42,7 @@
     <string name="failed_to_start">Не удалось запустить %1$s</string>
     <string name="vpn_channel_name">VPN</string>
     <string name="proxy_channel_name">Прокси</string>
-    <string name="notification_title">ByeDPI</string>
+    <string name="notification_title">ByeByeDPI</string>
     <string name="vpn_notification_content">VPN работает</string>
     <string name="proxy_notification_content">Прокси работает</string>
     <string name="general_category">Общие</string>
