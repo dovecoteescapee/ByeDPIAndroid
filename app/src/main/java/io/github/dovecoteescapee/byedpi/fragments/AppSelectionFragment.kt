@@ -4,40 +4,43 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.adapters.AppSelectionAdapter
 import io.github.dovecoteescapee.byedpi.data.AppInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AppSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
+    private lateinit var progressBar: ProgressBar
     private lateinit var adapter: AppSelectionAdapter
-    private var allApps: List<AppInfo> = listOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_app_selection, container, false)
 
         recyclerView = view.findViewById(R.id.recyclerView)
         searchView = view.findViewById(R.id.searchView)
+        progressBar = view.findViewById(R.id.progressBar)
 
         setupRecyclerView()
         setupSearchView()
+
+        loadApps()
 
         return view
     }
 
     private fun setupRecyclerView() {
-        allApps = getInstalledApps()
-        adapter = AppSelectionAdapter(allApps) { app, isChecked ->
-            updateSelectedApps(app.packageName, isChecked)
-        }
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = adapter
     }
 
     private fun setupSearchView() {
@@ -49,6 +52,21 @@ class AppSelectionFragment : Fragment() {
                 return true
             }
         })
+    }
+
+    private fun loadApps() {
+        progressBar.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            val apps = withContext(Dispatchers.IO) {
+                getInstalledApps()
+            }
+            adapter = AppSelectionAdapter(apps) { app, isChecked ->
+                updateSelectedApps(app.packageName, isChecked)
+            }
+            recyclerView.adapter = adapter
+            progressBar.visibility = View.GONE
+        }
     }
 
     private fun getInstalledApps(): List<AppInfo> {

@@ -17,7 +17,12 @@ class AppSelectionAdapter(
     private val onAppSelected: (AppInfo, Boolean) -> Unit
 ) : RecyclerView.Adapter<AppSelectionAdapter.ViewHolder>(), Filterable {
 
-    private var filteredApps: List<AppInfo> = allApps
+    private val filteredApps: MutableList<AppInfo> = allApps
+        .filter { !it.appName.contains("com.") }
+        .toMutableList()
+
+    private val originalApps: List<AppInfo> = allApps
+        .filter { !it.appName.contains("com.") }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appIcon: ImageView = view.findViewById(R.id.appIcon)
@@ -50,16 +55,17 @@ class AppSelectionAdapter(
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val query = constraint?.toString()?.lowercase() ?: ""
                 val filteredList = if (query.isEmpty()) {
-                    allApps
+                    originalApps
                 } else {
-                    allApps.filter { it.appName.lowercase().contains(query) }
+                    originalApps.filter { it.appName.lowercase().contains(query) }
                 }
                 return FilterResults().apply { values = filteredList }
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                @Suppress("UNCHECKED_CAST")
-                filteredApps = results?.values as? List<AppInfo> ?: allApps
+                val newFilteredApps = (results?.values as? List<AppInfo>) ?: originalApps
+                filteredApps.clear()
+                filteredApps.addAll(newFilteredApps)
                 notifyDataSetChanged()
             }
         }
