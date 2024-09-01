@@ -9,8 +9,8 @@
 Модификация ByeDPI Android с поддержкой фильтра приложений для режима VPN, автозапуска при старте устройства и автоподключением при запуске приложения.
 
 <div style="display: flex; align-items: center;">
-    <img alt="Скриншот-1" src=".github/images/settings_screen.png">
-    <img alt="Скриншот-2" src=".github/images/apps_screen.png">
+    <img alt="Скриншот-1" src=".github/images/settings_screen_2.png">
+    <img alt="Скриншот-2" src=".github/images/apps_screen_2.png">
 </div>
 
 Установить, включить в специальных возможностях. Активировать автозапуск и автоподключение в настройках.
