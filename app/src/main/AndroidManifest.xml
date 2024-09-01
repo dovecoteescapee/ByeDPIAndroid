@@ -80,7 +80,7 @@
         </service>
 
         <service
-            android:name=".mod.AutoStartAccessibilityService"
+            android:name=".services.AutoStartAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -92,7 +92,7 @@
         </service>
 
         <receiver
-            android:name=".mod.BootReceiver"
+            android:name=".receiver.BootReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">

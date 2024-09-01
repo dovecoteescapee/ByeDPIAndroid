@@ -1,4 +1,4 @@
-package io.github.dovecoteescapee.byedpi.mod
+package io.github.dovecoteescapee.byedpi.services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent

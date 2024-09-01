@@ -1,4 +1,4 @@
-package io.github.dovecoteescapee.byedpi.mod
+package io.github.dovecoteescapee.byedpi.utility
 
 import android.content.Context
 import android.provider.Settings

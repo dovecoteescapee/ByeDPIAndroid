@@ -1,8 +1,9 @@
-package io.github.dovecoteescapee.byedpi.mod
+package io.github.dovecoteescapee.byedpi.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.dovecoteescapee.byedpi.services.AutoStartAccessibilityService
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

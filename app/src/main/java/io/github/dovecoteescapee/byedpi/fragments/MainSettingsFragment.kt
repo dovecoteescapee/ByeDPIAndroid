@@ -10,8 +10,8 @@ import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
-import io.github.dovecoteescapee.byedpi.mod.AccessibilityUtils
-import io.github.dovecoteescapee.byedpi.mod.AutoStartAccessibilityService
+import io.github.dovecoteescapee.byedpi.utility.AccessibilityUtils
+import io.github.dovecoteescapee.byedpi.services.AutoStartAccessibilityService
 import io.github.dovecoteescapee.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
