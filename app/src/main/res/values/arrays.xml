@@ -50,9 +50,9 @@
 
     <!-- mod -->
     <array name="applist_types">
-        <item name="disable">Нет</item>
-        <item name="blacklist">Черный список</item>
-        <item name="whitelist">Белый список</item>
+        <item name="disable">Disable</item>
+        <item name="blacklist">Blacklist</item>
+        <item name="whitelist">Whitelist</item>
     </array>
 
     <array name="applist_types_entries">
