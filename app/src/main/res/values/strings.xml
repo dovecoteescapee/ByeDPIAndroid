@@ -73,12 +73,11 @@
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
     <string name="automation">Automation</string>
-    <string name="accessibility_service_description">Auto-start the app when the device is turned on</string>
-    <string name="autohide_settings">Automatically hide the app after auto-launch</string>
+    <string name="accessibility_service_description">Autorun the app when the device is turned on</string>
     <string name="autoconnect_settings">Automatically connect when opening the app</string>
-    <string name="accessibility_service_status">Auto-start status</string>
-    <string name="accessibility_service_enabled">Service is active, auto-start is working</string>
-    <string name="accessibility_service_disabled">To enable auto-start, activate the accessibility service</string>
+    <string name="accessibility_service_status">Autorun status</string>
+    <string name="accessibility_service_enabled">Service is active, autorun is working</string>
+    <string name="accessibility_service_disabled">To enable autorun, activate the accessibility service</string>
     <string name="applist_setting">App filter</string>
     <string name="apps_select">Select apps</string>
     <string name="search_apps">Search apps</string>

@@ -297,7 +297,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             builder.setMetered(false)
         }
 
-        // mod, фильтр приложений
         val preferences = getPreferences()
         val listType = preferences.getStringNotNull("applist_type", "disable")
         val listedApps = preferences.getSelectedApps()
