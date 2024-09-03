@@ -48,7 +48,6 @@
         <item name="whitelist">whitelist</item>
     </array>
 
-    <!-- mod -->
     <array name="applist_types">
         <item name="disable">Disable</item>
         <item name="blacklist">Blacklist</item>

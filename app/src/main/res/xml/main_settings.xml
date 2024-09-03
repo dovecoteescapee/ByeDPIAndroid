@@ -48,7 +48,6 @@
 
     </androidx.preference.PreferenceCategory>
 
-    <!--mod-->
     <androidx.preference.PreferenceCategory
         android:title="@string/automation">
 
