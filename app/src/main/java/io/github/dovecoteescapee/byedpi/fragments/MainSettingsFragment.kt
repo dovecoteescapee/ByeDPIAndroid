@@ -72,7 +72,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
 
-        // mod
         val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
         accessibilityStatusPref?.setOnPreferenceClickListener {
             val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
@@ -97,7 +96,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         super.onResume()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
 
-        // mod
         val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
         updateAccessibilityStatus(accessibilityStatusPref)
     }
@@ -113,7 +111,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
         val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
 
-        // mod
         val applist_type = findPreferenceNotNull<ListPreference>("applist_type")
         val selected_apps = findPreferenceNotNull<Preference>("selected_apps")
 
@@ -121,7 +118,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             Mode.VPN -> {
                 dns.isVisible = true
                 ipv6.isVisible = true
-                // mod
+
                 when (applist_type.value) {
                     "disable" -> {
                         applist_type.isVisible = true
@@ -142,14 +139,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             Mode.Proxy -> {
                 dns.isVisible = false
                 ipv6.isVisible = false
-                // mod
                 applist_type.isVisible = false
                 selected_apps.isVisible = false
             }
         }
     }
 
-    // mod
     private fun updateAccessibilityStatus(preference: Preference?) {
         preference?.let {
             val isEnabled = AccessibilityUtils.isAccessibilityServiceEnabled(

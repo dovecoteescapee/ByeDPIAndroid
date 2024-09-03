@@ -72,7 +72,6 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Протоколы</string>
     <string name="byedpi_protocols_hint">Снимите все галочки, чтобы десинхронизировать весь трафик</string>
-    <!--mod-->
     <string name="automation">Автоматизация</string>
     <string name="accessibility_service_description">Автозапуск приложения при включении устройства</string>
     <string name="autohide_settings">Автоматически скрывать приложение после автозапуска</string>
