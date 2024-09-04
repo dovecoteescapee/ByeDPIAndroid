@@ -30,7 +30,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        loadHistory()
+        updateHistoryCategory()
     }
 
     private fun addToHistory(command: String) {
@@ -58,10 +58,6 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private fun saveHistory(sharedPreferences: android.content.SharedPreferences, history: List<String>, key: String) {
         sharedPreferences.edit().putStringSet(key, history.toSet()).apply()
-    }
-
-    private fun loadHistory() {
-        updateHistoryCategory()
     }
 
     private fun updateHistoryCategory() {
