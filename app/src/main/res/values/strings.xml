@@ -81,4 +81,13 @@
     <string name="applist_setting">App filter</string>
     <string name="apps_select">Select apps</string>
     <string name="search_apps">Search apps</string>
+    <string name="cmd_history_title">Command History</string>
+    <string name="cmd_history_menu">Select Action</string>
+    <string name="cmd_history_apply">Apply</string>
+    <string name="cmd_history_copy">Copy</string>
+    <string name="cmd_history_pin">Pin</string>
+    <string name="cmd_history_unpin">Unpin</string>
+    <string name="cmd_history_pinned">Pinned</string>
+    <string name="cmd_history_delete">Delete</string>
+
 </resources>
