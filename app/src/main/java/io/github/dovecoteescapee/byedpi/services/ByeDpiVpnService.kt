@@ -308,6 +308,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 }
                 builder.addDisallowedApplication(applicationContext.packageName)
             }
+
             "whitelist" -> {
                 filter.forEach {
                     try {
@@ -315,6 +316,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                     } catch (ignore: PackageManager.NameNotFoundException) {}
                 }
             }
+
             else -> {
                 Log.w(TAG, "Invalid VPN filter mode: $filterMode")
             }

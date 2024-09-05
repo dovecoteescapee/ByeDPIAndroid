@@ -13,6 +13,7 @@ import androidx.core.content.edit
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,9 @@ import io.github.dovecoteescapee.byedpi.adapters.AppItemAdapter
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.databinding.FragmentFilterBinding
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class VpnAppsFilterFragment : Fragment(), MenuProvider {
 
@@ -67,16 +71,13 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
 
         binding.appList.adapter = adapter
 
-        Thread {
-            apps = collectApps()
+        lifecycleScope.launch {
+            apps = withContext(Dispatchers.IO) { collectApps() }
+            adapter.setList(apps)
 
-            activity.runOnUiThread {
-                adapter.setList(apps)
-
-                binding.progressCircular.visibility = View.GONE
-                binding.appList.visibility = View.VISIBLE
-            }
-        }.start()
+            binding.progressCircular.visibility = View.GONE
+            binding.appList.visibility = View.VISIBLE
+        }
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -113,6 +114,7 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
                 return false
             }
         })
+
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 return true
