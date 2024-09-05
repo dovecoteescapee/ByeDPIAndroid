@@ -59,6 +59,25 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/vpn_category">
+
+        <DropDownPreference
+            android:key="vpn_filter_mode"
+            android:title="@string/vpn_filter_mode"
+            android:entries="@array/vpn_filtering_modes"
+            android:entryValues="@array/vpn_filtering_modes_entries"
+            android:defaultValue="blacklist"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="vpn_filtered_apps"
+            android:title="@string/vpn_filtered_apps"
+            app:useSimpleSummaryProvider="true"
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.VpnAppsFilterFragment" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/about_category">
 
         <Preference
