@@ -26,7 +26,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
         editTextPreference.setOnPreferenceChangeListener { _, newValue ->
             val newCommand = newValue.toString()
-            addToHistory(newCommand)
+            if (newCommand.isNotBlank()) addToHistory(newCommand)
             true
         }
 
