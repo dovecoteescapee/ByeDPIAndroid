@@ -6,7 +6,6 @@
     <Preference
         android:key="byedpi_readme"
         android:title="Documentation"
-        android:textColor="?attr/textFillColor"
         android:icon="@drawable/ic_github_36">
         <intent
             android:action="android.intent.action.VIEW"

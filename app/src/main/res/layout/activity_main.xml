@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_vertical"
     tools:context=".activities.MainActivity">
 
     <com.google.android.material.button.MaterialButton
@@ -11,42 +12,30 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:paddingLeft="10pt"
         android:paddingTop="5pt"
         android:paddingRight="10pt"
         android:paddingBottom="5pt"
         android:textAllCaps="false"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/status_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
         tools:text="@string/vpn_connect" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/proxy_address"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_button"
-        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_below="@+id/status_button"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
         tools:text="@string/vpn_disconnected" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/proxy_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_text"
-        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_below="@+id/status_text"
+        android:layout_centerHorizontal="true"
         tools:text="127.0.0.1:1080" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
