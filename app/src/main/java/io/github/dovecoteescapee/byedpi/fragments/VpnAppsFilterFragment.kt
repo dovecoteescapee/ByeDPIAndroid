@@ -22,6 +22,7 @@ import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.databinding.FragmentFilterBinding
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -32,6 +33,8 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
 
     private lateinit var apps: List<AppItemAdapter.Model>
     private lateinit var checked: MutableSet<String>
+
+    private var updateJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +74,8 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
 
         binding.appList.adapter = adapter
 
-        lifecycleScope.launch {
+        updateJob?.cancel()
+        updateJob = lifecycleScope.launch {
             apps = withContext(Dispatchers.IO) { collectApps() }
             adapter.setList(apps)
 
@@ -99,19 +103,33 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
             }
     }
 
+    private fun updateFilter(query: String?) {
+        if (!::apps.isInitialized) {
+            return
+        }
+
+        if (query == null) {
+            adapter.setList(apps)
+            return
+        }
+
+        val lQuery = query.lowercase()
+        adapter.setList(apps.filter { it.label.lowercase().contains(lQuery) })
+    }
+
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_filter, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
         (searchItem.actionView as SearchView).setOnQueryTextListener(object : OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                val lQuery = query.lowercase()
-                adapter.setList(apps.filter { it.label.lowercase().contains(lQuery) })
-                return false
+                updateFilter(query)
+                return true
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-                return false
+                updateFilter(query)
+                return true
             }
         })
 
@@ -121,7 +139,7 @@ class VpnAppsFilterFragment : Fragment(), MenuProvider {
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                adapter.setList(apps)
+                updateFilter(null)
                 return true
             }
         })
