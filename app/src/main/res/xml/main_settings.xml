@@ -23,6 +23,11 @@
             android:defaultValue="vpn"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:key="autostart"
+            android:title="@string/autostart_setting"
+            android:defaultValue="false" />
+
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
             android:title="@string/dbs_ip_setting"
