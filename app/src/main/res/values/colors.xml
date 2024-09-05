@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="primary">#5976DF</color>
+    <color name="primaryVariant">#3C52A3</color>
+    <color name="onPrimary">@color/white</color>
+
+    <color name="secondary">#5976DF</color>
+    <color name="secondaryVariant">#3C52A3</color>
+    <color name="onSecondary">@color/white</color>
+
+    <color name="statusBar">@color/primaryVariant</color>
 </resources>
