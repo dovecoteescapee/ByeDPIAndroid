@@ -82,7 +82,7 @@
     <string name="applist_setting">Фильтр приложений</string>
     <string name="apps_select">Выбрать приложения</string>
     <string name="search_apps">Поиск приложений</string>
-    <string name="cmd_history_title">История комманд</string>
+    <string name="cmd_history_title">История команд</string>
     <string name="cmd_history_menu">Выберите действие</string>
     <string name="cmd_history_apply">Применить</string>
     <string name="cmd_history_copy">Копировать</string>
