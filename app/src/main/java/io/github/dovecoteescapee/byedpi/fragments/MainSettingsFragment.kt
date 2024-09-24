@@ -1,13 +1,17 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
+import io.github.dovecoteescapee.byedpi.utility.AccessibilityUtils
+import io.github.dovecoteescapee.byedpi.services.AutoStartAccessibilityService
 import io.github.dovecoteescapee.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
@@ -42,7 +46,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             it.isBlank() || checkNotLocalIp(it)
         }
 
-        findPreferenceNotNull<DropDownPreference>("app_theme")
+        findPreferenceNotNull<ListPreference>("app_theme")
             .setOnPreferenceChangeListener { _, newValue ->
                 setTheme(newValue as String)
                 true
@@ -68,12 +72,32 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
 
+        val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
+        accessibilityStatusPref?.setOnPreferenceClickListener {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            startActivity(intent)
+            true
+        }
+
+        val selectedApps = findPreference<Preference>("selected_apps")
+        selectedApps?.setOnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.settings, AppSelectionFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+
+        updateAccessibilityStatus(accessibilityStatusPref)
         updatePreferences()
     }
 
     override fun onResume() {
         super.onResume()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
+
+        val accessibilityStatusPref = findPreference<Preference>("accessibility_service_status")
+        updateAccessibilityStatus(accessibilityStatusPref)
     }
 
     override fun onPause() {
@@ -87,15 +111,49 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
         val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
 
+        val applist_type = findPreferenceNotNull<ListPreference>("applist_type")
+        val selected_apps = findPreferenceNotNull<Preference>("selected_apps")
+
         when (mode) {
             Mode.VPN -> {
                 dns.isVisible = true
                 ipv6.isVisible = true
+                when (applist_type.value) {
+                    "disable" -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = false
+                    }
+                    "blacklist", "whitelist" -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = true
+                    }
+                    else -> {
+                        applist_type.isVisible = true
+                        selected_apps.isVisible = false
+                        Log.w(TAG, "Unexpected applist_type value: ${applist_type.value}")
+                    }
+                }
             }
 
             Mode.Proxy -> {
                 dns.isVisible = false
                 ipv6.isVisible = false
+                applist_type.isVisible = false
+                selected_apps.isVisible = false
+            }
+        }
+    }
+
+    private fun updateAccessibilityStatus(preference: Preference?) {
+        preference?.let {
+            val isEnabled = AccessibilityUtils.isAccessibilityServiceEnabled(
+                requireContext(),
+                AutoStartAccessibilityService::class.java
+            )
+            it.summary = if (isEnabled) {
+                getString(R.string.accessibility_service_enabled)
+            } else {
+                getString(R.string.accessibility_service_disabled)
             }
         }
     }

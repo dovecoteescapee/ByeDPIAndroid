@@ -1,0 +1,10 @@
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:packageNames="io.github.dovecoteescapee.byedpi"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeViewScrolled"
+    android:accessibilityFlags="flagRequestFilterKeyEvents|flagIncludeNotImportantViews"
+    android:accessibilityFeedbackType="feedbackHaptic"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="false"
+    android:settingsActivity="io.github.dovecoteescapee.byedpi.SettingsActivity" />
+

@@ -143,6 +143,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 if (code != 0) {
                     Log.e(TAG, "Proxy stopped with code $code")
                     updateStatus(ServiceStatus.Failed)
+                    stopTun2Socks()
                 } else {
                     if (!stopping) {
                         stop()
@@ -297,7 +298,37 @@ class ByeDpiVpnService : LifecycleVpnService() {
             builder.setMetered(false)
         }
 
-        builder.addDisallowedApplication(applicationContext.packageName)
+        val preferences = getPreferences()
+        val listType = preferences.getStringNotNull("applist_type", "disable")
+        val listedApps = preferences.getSelectedApps()
+
+        when (listType) {
+            "blacklist" -> {
+                for (packageName in listedApps) {
+                    try {
+                        builder.addDisallowedApplication(packageName)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Не удалось добавить приложение $packageName в черный список", e)
+                    }
+                }
+
+                builder.addDisallowedApplication(applicationContext.packageName)
+            }
+
+            "whitelist" -> {
+                for (packageName in listedApps) {
+                    try {
+                        builder.addAllowedApplication(packageName)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Не удалось добавить приложение $packageName в белый список", e)
+                    }
+                }
+            }
+
+            "disable" -> {
+                builder.addDisallowedApplication(applicationContext.packageName)
+            }
+        }
 
         return builder
     }

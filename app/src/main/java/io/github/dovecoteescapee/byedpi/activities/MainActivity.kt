@@ -159,6 +159,12 @@ class MainActivity : AppCompatActivity() {
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
+
+        val autoConnect = getPreferences().getBoolean("auto_connect", false)
+
+        if(autoConnect) {
+            this.start()
+        }
     }
 
     override fun onResume() {

@@ -72,4 +72,22 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
+    <string name="automation">Automation</string>
+    <string name="accessibility_service_description">Autorun the app when the device is turned on</string>
+    <string name="autoconnect_settings">Automatically connect when opening the app</string>
+    <string name="accessibility_service_status">Autorun status</string>
+    <string name="accessibility_service_enabled">Service is active, autorun is working</string>
+    <string name="accessibility_service_disabled">To enable autorun, activate the accessibility service</string>
+    <string name="applist_setting">App filter</string>
+    <string name="apps_select">Select apps</string>
+    <string name="search_apps">Search apps</string>
+    <string name="cmd_history_title">Command History</string>
+    <string name="cmd_history_menu">Select Action</string>
+    <string name="cmd_history_apply">Apply</string>
+    <string name="cmd_history_copy">Copy</string>
+    <string name="cmd_history_pin">Pin</string>
+    <string name="cmd_history_unpin">Unpin</string>
+    <string name="cmd_history_pinned">Pinned</string>
+    <string name="cmd_history_delete">Delete</string>
+
 </resources>

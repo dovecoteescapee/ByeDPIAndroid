@@ -12,15 +12,15 @@
             android:data="@string/byedpi_docs" />
     </Preference>
 
-    <androidx.preference.PreferenceCategory>
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_cmd_args"
+        android:title="@string/command_line_arguments"
+        android:dialogTitle="@string/command_line_arguments"
+        android:inputType="textMultiLine"
+        app:useSimpleSummaryProvider="true" />
 
-        <com.takisoft.preferencex.EditTextPreference
-            android:key="byedpi_cmd_args"
-            android:title="@string/command_line_arguments"
-            android:dialogTitle="@string/command_line_arguments"
-            android:inputType="textMultiLine"
-            app:useSimpleSummaryProvider="true" />
-
-    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
+        android:key="cmd_history_category"
+        android:title="@string/cmd_history_title" />
 
 </PreferenceScreen>

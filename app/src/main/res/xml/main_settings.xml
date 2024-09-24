@@ -7,21 +7,21 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/general_category">
 
-        <DropDownPreference
+        <ListPreference
             android:key="app_theme"
             android:title="@string/theme_settings"
             android:entries="@array/themes"
             android:entryValues="@array/themes_entries"
-            android:defaultValue="system"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s"
+            android:defaultValue="system" />
 
-        <DropDownPreference
+        <ListPreference
             android:key="byedpi_mode"
             android:title="@string/mode_setting"
             android:entries="@array/byedpi_modes"
             android:entryValues="@array/byedpi_modes_entries"
-            android:defaultValue="vpn"
-            app:useSimpleSummaryProvider="true" />
+            android:summary="%s"
+            android:defaultValue="vpn" />
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
@@ -32,6 +32,32 @@
         <SwitchPreference
             android:key="ipv6_enable"
             android:title="@string/ipv6_setting"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="applist_type"
+            android:title="@string/applist_setting"
+            android:entries="@array/applist_types"
+            android:entryValues="@array/applist_types_entries"
+            android:summary="%s"
+            android:defaultValue="disable" />
+
+        <Preference
+            android:key="selected_apps"
+            android:title="@string/apps_select" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/automation">
+
+        <Preference
+            android:key="accessibility_service_status"
+            android:title="@string/accessibility_service_status" />
+
+        <SwitchPreference
+            android:key="auto_connect"
+            android:title="@string/autoconnect_settings"
             android:defaultValue="false" />
 
     </androidx.preference.PreferenceCategory>
