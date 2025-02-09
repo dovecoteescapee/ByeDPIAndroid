@@ -11,6 +11,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
+import io.github.dovecoteescapee.byedpi.data.PAUSE_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
 
 fun registerNotificationChannel(context: Context, id: String, @StringRes name: Int) {
@@ -36,6 +37,7 @@ fun createConnectionNotification(
     @StringRes title: Int,
     @StringRes content: Int,
     service: Class<*>,
+    pauseMsg: String
 ): Notification =
     NotificationCompat.Builder(context, channelId)
         .setSmallIcon(R.drawable.ic_notification)
@@ -50,7 +52,15 @@ fun createConnectionNotification(
                     PendingIntent.FLAG_IMMUTABLE,
                 )
             )
-            .setContentIntent(
+            .addAction(0, pauseMsg,
+                PendingIntent.getService(
+                    context,
+                    0,
+                    Intent(context, service).setAction(PAUSE_ACTION),
+                    PendingIntent.FLAG_IMMUTABLE,
+                )
+            )
+        .setContentIntent(
                 PendingIntent.getActivity(
                     context,
                     0,

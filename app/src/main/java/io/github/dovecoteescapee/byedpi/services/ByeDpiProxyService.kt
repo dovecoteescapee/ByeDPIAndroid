@@ -1,16 +1,21 @@
 package io.github.dovecoteescapee.byedpi.services
 
+import android.Manifest
 import android.app.Notification
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxy
 import io.github.dovecoteescapee.byedpi.core.ByeDpiProxyPreferences
 import io.github.dovecoteescapee.byedpi.data.*
+import io.github.dovecoteescapee.byedpi.services.ByeDpiVpnService.Companion
 import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -54,6 +59,11 @@ class ByeDpiProxyService : LifecycleService() {
                 START_NOT_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch { pause() }
+                START_NOT_STICKY
+            }
+
             else -> {
                 Log.w(TAG, "Unknown action: $action")
                 START_NOT_STICKY
@@ -83,7 +93,7 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private fun startForeground() {
-        val notification: Notification = createNotification()
+        val notification: Notification = createNotification("Pause")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(
                 FOREGROUND_SERVICE_ID,
@@ -103,6 +113,46 @@ class ByeDpiProxyService : LifecycleService() {
         }
         updateStatus(ServiceStatus.Disconnected)
         stopSelf()
+    }
+
+    private suspend fun pause() {
+        if (proxyJob == null) {
+            Log.i(TAG, "Starting")
+
+            if (status == ServiceStatus.Connected) {
+                Log.w(TAG, "Proxy already connected")
+                return
+            }
+
+            try {
+                mutex.withLock {
+                    startProxy()
+                }
+                updateStatus(ServiceStatus.Connected)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start proxy", e)
+                updateStatus(ServiceStatus.Failed)
+                stop()
+            }
+        } else {
+            Log.i(TAG, "Stopping VPN")
+
+            mutex.withLock {
+                stopProxy()
+            }
+            updateStatus(ServiceStatus.Disconnected)
+        }
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling ActivityCompat#requestPermissions
+            return
+        }
+        val notification: Notification = createNotification(
+            if (ByeDpiProxyService.status == ServiceStatus.Connected) "Pause" else "Resume"
+        )
+        NotificationManagerCompat.from(this).notify(ByeDpiProxyService.FOREGROUND_SERVICE_ID, notification)
     }
 
     private suspend fun startProxy() {
@@ -178,12 +228,13 @@ class ByeDpiProxyService : LifecycleService() {
         sendBroadcast(intent)
     }
 
-    private fun createNotification(): Notification =
+    private fun createNotification(pauseMsg: String): Notification =
         createConnectionNotification(
             this,
             NOTIFICATION_CHANNEL_ID,
             R.string.notification_title,
             R.string.proxy_notification_content,
             ByeDpiProxyService::class.java,
+            pauseMsg
         )
 }

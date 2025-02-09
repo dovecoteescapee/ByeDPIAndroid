@@ -1,12 +1,16 @@
 package io.github.dovecoteescapee.byedpi.services
 
+import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
@@ -60,6 +64,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 START_NOT_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch { pause() }
+                START_NOT_STICKY
+            }
+
             else -> {
                 Log.w(TAG, "Unknown action: $action")
                 START_NOT_STICKY
@@ -95,7 +104,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     }
 
     private fun startForeground() {
-        val notification: Notification = createNotification()
+        val notification: Notification = createNotification("Pause")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(
                 FOREGROUND_SERVICE_ID,
@@ -124,6 +133,58 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         updateStatus(ServiceStatus.Disconnected)
         stopSelf()
+    }
+
+    private suspend fun pause() {
+        if (proxyJob == null) {
+            Log.i(TAG, "Starting")
+
+            if (status == ServiceStatus.Connected) {
+                Log.w(TAG, "VPN already connected")
+                return
+            }
+
+            try {
+                mutex.withLock {
+                    startProxy()
+                    startTun2Socks()
+                }
+                updateStatus(ServiceStatus.Connected)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start VPN", e)
+                updateStatus(ServiceStatus.Failed)
+                stop()
+            }
+
+        } else {
+            Log.i(TAG, "Stopping")
+
+            mutex.withLock {
+                stopping = true
+                try {
+                    stopTun2Socks()
+                    stopProxy()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to stop VPN", e)
+                } finally {
+                    stopping = false
+                }
+            }
+
+            updateStatus(ServiceStatus.Disconnected)
+        }
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling ActivityCompat#requestPermissions
+            return
+        }
+        val notification: Notification = createNotification(
+            if (status == ServiceStatus.Connected) "Pause" else "Resume"
+        )
+        NotificationManagerCompat.from(this).notify(FOREGROUND_SERVICE_ID, notification)
     }
 
     private suspend fun startProxy() {
@@ -258,15 +319,17 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
         intent.putExtra(SENDER, Sender.VPN.ordinal)
         sendBroadcast(intent)
+
     }
 
-    private fun createNotification(): Notification =
+    private fun createNotification(pauseMsg: String): Notification =
         createConnectionNotification(
             this,
             NOTIFICATION_CHANNEL_ID,
             R.string.notification_title,
             R.string.vpn_notification_content,
             ByeDpiVpnService::class.java,
+            pauseMsg
         )
 
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
