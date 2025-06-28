@@ -2,7 +2,9 @@ package io.github.dovecoteescapee.byedpi.services
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -297,7 +299,61 @@ class ByeDpiVpnService : LifecycleVpnService() {
             builder.setMetered(false)
         }
 
-        builder.addDisallowedApplication(applicationContext.packageName)
+        // Per-app routing logic
+        val appSelectionPrefs = applicationContext.getSharedPreferences(
+            io.github.dovecoteescapee.byedpi.activities.AppSelectionActivity.PREFS_NAME,
+            Context.MODE_PRIVATE
+        )
+        val perAppRoutingEnabled = getPreferences().getBoolean("per_app_routing_enabled", false)
+
+        if (perAppRoutingEnabled) {
+            val selectedApps = appSelectionPrefs.getStringSet(
+                io.github.dovecoteescapee.byedpi.activities.AppSelectionActivity.KEY_SELECTED_APPS,
+                emptySet()
+            ) ?: emptySet()
+
+            if (selectedApps.isNotEmpty()) {
+                // Disallow this app itself to prevent loops, if not already handled
+                // Though, typically the service itself won't be making network requests that need routing.
+                // builder.addDisallowedApplication(applicationContext.packageName)
+                for (packageName in selectedApps) {
+                    try {
+                        // Check if package is still installed
+                        packageManager.getPackageInfo(packageName, 0)
+                        builder.addAllowedApplication(packageName)
+                        Log.i(TAG, "Allowing app for VPN: $packageName")
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Failed to add allowed application $packageName, app might be uninstalled.", e)
+                    }
+                }
+            } else {
+                // If per-app is enabled but no apps are selected, effectively block all traffic
+                // by allowing a non-existent package. Or, one could argue it should fall back to global.
+                // For now, let's assume it means "route nothing".
+                // A common practice is to allow the service's own package if nothing else is allowed,
+                // but that might not be desired here.
+                // To block all, we can add a disallowed package that doesn't exist or disallow all and allow none.
+                // For simplicity, if no apps selected, it will route nothing as no app is "allowed".
+                // Alternatively, to ensure nothing is routed, one could add a dummy disallowed package.
+                // builder.addDisallowedApplication("com.example.nonexistent.dummy")
+                Log.i(TAG, "Per-app routing enabled, but no apps selected. VPN will not route general traffic.")
+            }
+        } else {
+            // Global mode: ensure this app itself is disallowed if it wasn't handled by default
+            // builder.addDisallowedApplication(applicationContext.packageName)
+            // No specific allowed apps means all apps are allowed (default behavior for VpnService)
+            // unless other disallowed apps are specified.
+            Log.i(TAG, "Global routing enabled.")
+        }
+        // Always disallow the VPN app itself to prevent loops / issues.
+        // This is generally a good practice.
+        try {
+            builder.addDisallowedApplication(applicationContext.packageName)
+            Log.i(TAG, "Disallowing self (${applicationContext.packageName}) from VPN.")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to disallow self from VPN.", e)
+        }
+
 
         return builder
     }

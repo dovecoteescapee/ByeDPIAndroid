@@ -72,4 +72,12 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
+    <string name="app_icon_description">Application Icon</string>
+    <string name="title_activity_app_selection">Select Apps for Routing</string>
+
+    <string name="routing_category_title">Routing</string>
+    <string name="per_app_routing_switch_title">Route for selected apps only</string>
+    <string name="per_app_routing_switch_summary">When enabled, only selected apps traffic goes through ByeDPI</string>
+    <string name="select_apps_for_routing_title">Select apps for routing</string>
+    <string name="select_apps_for_routing_summary">Choose which applications will use ByeDPI</string>
 </resources>

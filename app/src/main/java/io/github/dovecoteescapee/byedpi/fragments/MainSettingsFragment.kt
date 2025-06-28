@@ -4,9 +4,11 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import android.content.Intent
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
+import io.github.dovecoteescapee.byedpi.activities.AppSelectionActivity
 import io.github.dovecoteescapee.byedpi.data.Mode
 import io.github.dovecoteescapee.byedpi.utility.*
 
@@ -67,6 +69,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         }
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
+
+        findPreferenceNotNull<Preference>("select_apps_for_routing").setOnPreferenceClickListener {
+            val intent = Intent(requireActivity(), AppSelectionActivity::class.java)
+            startActivity(intent)
+            true
+        }
 
         updatePreferences()
     }

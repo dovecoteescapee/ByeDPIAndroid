@@ -37,6 +37,23 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/routing_category_title">
+
+        <SwitchPreferenceCompat
+            android:key="per_app_routing_enabled"
+            android:title="@string/per_app_routing_switch_title"
+            android:summary="@string/per_app_routing_switch_summary"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="select_apps_for_routing"
+            android:title="@string/select_apps_for_routing_title"
+            android:summary="@string/select_apps_for_routing_summary"
+            android:dependency="per_app_routing_enabled" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_category">
 
         <SwitchPreference

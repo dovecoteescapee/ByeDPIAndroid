@@ -40,6 +40,11 @@
             android:label="@string/title_settings"
             android:exported="true"/>
 
+        <activity
+            android:name=".activities.AppSelectionActivity"
+            android:label="@string/title_activity_app_selection"
+            android:parentActivityName=".activities.SettingsActivity" />
+
         <service android:name=".services.ByeDpiVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:foregroundServiceType="specialUse"
