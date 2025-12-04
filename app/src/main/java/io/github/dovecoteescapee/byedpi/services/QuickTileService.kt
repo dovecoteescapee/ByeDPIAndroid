@@ -1,127 +1,87 @@
 package io.github.dovecoteescapee.byedpi.services
 
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.service.quicksettings.PendingIntentActivityWrapper
-import androidx.core.service.quicksettings.TileServiceCompat
-import io.github.dovecoteescapee.byedpi.R
-import io.github.dovecoteescapee.byedpi.activities.MainActivity
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
-
 
 @RequiresApi(Build.VERSION_CODES.N)
 class QuickTileService : TileService() {
 
     companion object {
-        private val TAG: String = QuickTileService::class.java.simpleName
+        private const val TAG = "QuickTileService"
     }
 
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val senderOrd = intent.getIntExtra(SENDER, -1)
-            val sender = Sender.entries.getOrNull(senderOrd)
-            if (sender == null) {
-                Log.w(TAG, "Received intent with unknown sender: $senderOrd")
-                return
-            }
+    private var appTile: Tile? = null
 
-            when (val action = intent.action) {
-                STARTED_BROADCAST,
-                STOPPED_BROADCAST -> updateStatus()
+    override fun onTileAdded() {
+        super.onTileAdded()
+        Log.i(TAG, "Tile added")
+    }
 
-                FAILED_BROADCAST -> {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.failed_to_start, sender.name),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    updateStatus()
-                }
-
-                else -> Log.w(TAG, "Unknown action: $action")
-            }
-        }
+    override fun onTileRemoved() {
+        super.onTileRemoved()
+        Log.i(TAG, "Tile removed")
     }
 
     override fun onStartListening() {
+        super.onStartListening()
+        appTile = qsTile
         updateStatus()
-        ContextCompat.registerReceiver(
-            this,
-            receiver,
-            IntentFilter().apply {
-                addAction(STARTED_BROADCAST)
-                addAction(STOPPED_BROADCAST)
-                addAction(FAILED_BROADCAST)
-            },
-            ContextCompat.RECEIVER_EXPORTED,
-        )
     }
 
     override fun onStopListening() {
-        unregisterReceiver(receiver)
-    }
-
-    private fun launchActivity() {
-        TileServiceCompat.startActivityAndCollapse(
-            this, PendingIntentActivityWrapper(
-                this, 0, Intent(this, MainActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT, false
-            )
-        )
+        super.onStopListening()
+        appTile = null
     }
 
     override fun onClick() {
-        if (qsTile.state == Tile.STATE_UNAVAILABLE) {
-            return
-        }
-
-        unlockAndRun(this::handleClick)
-    }
-
-    private fun setState(newState: Int) {
-        qsTile.apply {
-            state = newState
-            updateTile()
-        }
-    }
-
-    private fun updateStatus() {
-        val (status) = appStatus
-        setState(if (status == AppStatus.Halted) Tile.STATE_INACTIVE else Tile.STATE_ACTIVE)
+        super.onClick()
+        handleClick()
     }
 
     private fun handleClick() {
-        setState(Tile.STATE_ACTIVE)
-        setState(Tile.STATE_UNAVAILABLE)
-
         val (status) = appStatus
+
         when (status) {
             AppStatus.Halted -> {
                 val mode = getPreferences().mode()
 
                 if (mode == Mode.VPN && VpnService.prepare(this) != null) {
-                    updateStatus()
-                    launchActivity()
                     return
                 }
 
                 ServiceManager.start(this, mode)
+                setState(Tile.STATE_ACTIVE)
             }
+            AppStatus.Running -> {
+                ServiceManager.stop(this)
+                setState(Tile.STATE_INACTIVE)
+            }
+        }
 
-            AppStatus.Running -> ServiceManager.stop(this)
+        Log.i(TAG, "Toggle tile")
+    }
+
+    private fun updateStatus() {
+        val (status) = appStatus
+
+        if (status == AppStatus.Running) {
+            setState(Tile.STATE_ACTIVE)
+        } else {
+            setState(Tile.STATE_INACTIVE)
+        }
+    }
+
+    private fun setState(newState: Int) {
+        appTile?.apply {
+            state = newState
+            updateTile()
         }
     }
 }

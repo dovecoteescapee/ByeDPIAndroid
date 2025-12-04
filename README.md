@@ -1,97 +1,71 @@
-# ByeDPI for Android
-
-**English** | [Русский](README-ru.md)
-
-<div style="text-align: center;">
-  <img alt="ByeDPI logo" src=".github/images/logo.svg" width="100%" height="200px">
+<div align="center">
+  <p>
+    <img src="https://github.com/romanvht/ByeDPIAndroid/raw/master/.github/images/app.svg" alt="Логотип ByeDPI" width="200" />
+  </p>
+  <h1>ByeByeDPI Android</h1>
+  <p>
+    Русский |
+    <a href="README-en.md">English</a> |
+    <a href="README-tr.md">Türkçe</a>
+  </p>
+  <p>
+    <a href="https://github.com/romanvht/ByeByeDPI/releases/latest"><img src="https://img.shields.io/github/v/release/romanvht/ByeByeDPI" alt="Latest Release" /></a>
+    <a href="https://github.com/romanvht/ByeByeDPI/releases"><img src="https://img.shields.io/github/downloads/romanvht/ByeByeDPI/total" alt="Downloads" /></a>
+    <a href="https://github.com/romanvht/ByeByeDPI/blob/master/LICENSE"><img src="https://img.shields.io/github/license/romanvht/ByeByeDPI" alt="License" /></a>
+  </p>
 </div>
+
+Приложение для Android, которое локально запускает ByeDPI и перенаправляет весь трафик через него.
+
+Для стабильной работы может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
+
+Приложение не является VPN. Оно использует VPN-режим на Android для перенаправления трафика, но не передает ничего на удаленный сервер. Оно не шифрует трафик и не скрывает ваш IP-адрес.
+
+Приложения является форком [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid)
 
 ---
 
-Android application that runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship.
+### Возможности
+* Автозапуск сервиса при старте устройства
+* Сохранение списков параметров командной строки
+* Улучшена совместимость с Android TV/BOX
+* Раздельное туннелирование приложений
+* Импорт/экспорт настроек
 
+### Использование
+* Для работы автозапуска активируйте пункт в настройках.
+* Рекомендуется подключится один раз к VPN, чтобы принять запрос.
+* После этого, при загрузке устройства, приложение автоматически запустит сервис в зависимости от настроек (VPN/Proxy)
+* Если у вас Android TV/BOX, и при подключении пропадает соединение по Ethernet, активируйте режим белого списка и укажите нужные приложения, которые должны работать через VPN (например, YouTube)
+* Комплексная инструкция от комьюнити [ByeByeDPI-Manual](https://github.com/BDManual/ByeByeDPI-Manual)
 
-This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) and redirects all traffic through it.
+### Как использовать ByeByeDPI вместе с AdGuard?
+* Запустите ByeByeDPI в режиме прокси.
+* Добавьте ByeByeDPI в исключения AdGuard на вкладке "Управление приложениями".
+* В настройках AdGuard укажите прокси:
+```plaintext
+Тип прокси: SOCKS5
+Хост: 127.0.0.1
+Порт: 1080 (по умолчанию)
+```
 
-## Installation
+### Сборка
+1. Клонируйте репозиторий с сабмодулями:
+```bash
+git clone --recurse-submodules
+```
+2. Запустите скрипт сборки из корня репозитория:
+```bash
+./gradlew assembleRelease
+```
+3. APK будет в `app/build/outputs/apk/release/`
 
-[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
-    alt="Get it on GitHub"
-    height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-    alt="Get it on IzzyOnDroid"
-    height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee.byedpi)
+> P.S.: hev_socks5_tunnel не соберется под Windows, вам нужно будет использовать WSL
 
-### Or use Obtainium
+### Хеш подписи
+SHA-256: 
+`77:45:10:75:AC:EA:40:64:06:47:5D:74:D4:59:88:3A:49:A6:40:51:FA:F3:2E:42:F7:18:F3:F9:77:7A:8D:FB`
 
-1. Install [Obtainium](https://github.com/ImranR98/Obtainium/blob/main/README.md#installation)
-2. Add the app by URL:  
-   `https://github.com/dovecoteescapee/ByeDPIAndroid`
-
-## Settings
-
-To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
-
-## FAQ
-
-### I can't configure it. What to do?
-
-You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
-
-### Does the application require root access?
-
-No. All application features work without root.
-
-### Is this a VPN?
-
-No. The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.
-
-### How to use ByeDPI with AdGuard?
-
-1. Run ByeDPI in proxy mode.
-2. Add ByeDPI to AdGuard exceptions on the "App management" tab.
-3. In AdGuard settings, specify the proxy:
-
-   ```plaintext
-   Proxy type: SOCKS5
-   Proxy host: 127.0.0.1
-   Proxy port: 1080 (default)
-   ```
-
-### What data does the application collect?
-
-None. The application does not send any data to a remote server. All traffic is processed on the device.
-
-### Are there any for other platforms?
-
-[Similar projects](https://github.com/ValdikSS/GoodbyeDPI/blob/master/README.md#similar-projects))
-
-### What is DPI?
-
-DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic. It is used by providers and government agencies to block sites and services.
-
-## Dependencies
-
+### Зависимости
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
-
-## Building
-
-For building the application, you need:
-
-1. JDK 8 or later
-2. Android SDK
-3. Android NDK
-4. CMake 3.22.1 or later
-
-To build the application:
-
-1. Clone the repository with submodules:
-   ```bash
-   git clone --recurse-submodules
-   ```
-2. Run the build script from the root of the repository:
-   ```bash
-   ./gradlew assembleRelease
-   ```
-3. The APK will be in `app/build/outputs/apk/release/`

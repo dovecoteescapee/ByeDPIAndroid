@@ -5,22 +5,30 @@
 
     <Preference
         android:key="byedpi_readme"
-        android:title="Documentation"
+        android:title="@string/cmd_documentation"
         android:icon="@drawable/ic_github_36">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="@string/byedpi_docs" />
     </Preference>
 
-    <androidx.preference.PreferenceCategory>
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_cmd_args"
+        android:title="@string/command_line_arguments"
+        android:dialogTitle="@string/command_line_arguments"
+        android:defaultValue="-Ku -a1 -An -o1 -At,r,s -d1"
+        android:inputType="textMultiLine"
+        app:useSimpleSummaryProvider="true" />
 
-        <com.takisoft.preferencex.EditTextPreference
-            android:key="byedpi_cmd_args"
-            android:title="@string/command_line_arguments"
-            android:dialogTitle="@string/command_line_arguments"
-            android:inputType="textMultiLine"
-            app:useSimpleSummaryProvider="true" />
+    <Preference
+        android:key="clear_cmd_args"
+        android:layout="@layout/cmd_editor_clear"
+        android:title="@string/cmd_args_clear" />
 
-    </androidx.preference.PreferenceCategory>
+    <Preference
+        android:key="cmd_history_header"
+        android:title="@string/cmd_history_title"
+        android:summary="@string/cmd_history_title_summary"
+        android:layout="@layout/history_category" />
 
 </PreferenceScreen>

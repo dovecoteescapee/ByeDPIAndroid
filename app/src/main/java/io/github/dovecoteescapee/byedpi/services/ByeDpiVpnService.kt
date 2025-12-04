@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.services
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -17,10 +18,12 @@ import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 class ByeDpiVpnService : LifecycleVpnService() {
@@ -28,11 +31,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private var proxyJob: Job? = null
     private var tunFd: ParcelFileDescriptor? = null
     private val mutex = Mutex()
-    private var stopping: Boolean = false
 
     companion object {
         private val TAG: String = ByeDpiVpnService::class.java.simpleName
         private const val FOREGROUND_SERVICE_ID: Int = 1
+        private const val PAUSE_NOTIFICATION_ID: Int = 3
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPIVpn"
 
         private var status: ServiceStatus = ServiceStatus.Disconnected
@@ -55,6 +58,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 START_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch {
+                    stop()
+                    createNotificationPause()
+                }
+                START_NOT_STICKY
+            }
+
             STOP_ACTION -> {
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
@@ -75,18 +86,21 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun start() {
         Log.i(TAG, "Starting")
 
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(PAUSE_NOTIFICATION_ID)
+
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "VPN already connected")
             return
         }
 
         try {
+            startForeground()
             mutex.withLock {
                 startProxy()
                 startTun2Socks()
             }
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start VPN", e)
             updateStatus(ServiceStatus.Failed)
@@ -111,14 +125,13 @@ class ByeDpiVpnService : LifecycleVpnService() {
         Log.i(TAG, "Stopping")
 
         mutex.withLock {
-            stopping = true
             try {
-                stopTun2Socks()
-                stopProxy()
+                withContext(Dispatchers.IO) {
+                    stopProxy()
+                    stopTun2Socks()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to stop VPN", e)
-            } finally {
-                stopping = false
             }
         }
 
@@ -126,7 +139,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         stopSelf()
     }
 
-    private suspend fun startProxy() {
+    private fun startProxy() {
         Log.i(TAG, "Starting proxy")
 
         if (proxyJob != null) {
@@ -138,18 +151,17 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = byeDpiProxy.startProxy(preferences)
+            delay(500)
 
-            withContext(Dispatchers.Main) {
-                if (code != 0) {
-                    Log.e(TAG, "Proxy stopped with code $code")
-                    updateStatus(ServiceStatus.Failed)
-                } else {
-                    if (!stopping) {
-                        stop()
-                        updateStatus(ServiceStatus.Disconnected)
-                    }
-                }
+            if (code != 0) {
+                Log.e(TAG, "Proxy stopped with code $code")
+                updateStatus(ServiceStatus.Failed)
+            } else {
+                updateStatus(ServiceStatus.Disconnected)
             }
+
+            stopTun2Socks()
+            stopSelf()
         }
 
         Log.i(TAG, "Proxy started")
@@ -163,9 +175,24 @@ class ByeDpiVpnService : LifecycleVpnService() {
             return
         }
 
-        byeDpiProxy.stopProxy()
-        proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
-        proxyJob = null
+        try {
+            byeDpiProxy.stopProxy()
+            proxyJob?.cancel()
+
+            val completed = withTimeoutOrNull(2000) {
+                proxyJob?.join()
+                true
+            }
+
+            if (completed == null) {
+                Log.w(TAG, "proxy not finish in time, cancelling...")
+                byeDpiProxy.jniForceClose()
+            }
+
+            proxyJob = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close proxyJob", e)
+        }
 
         Log.i(TAG, "Proxy stopped")
     }
@@ -178,19 +205,23 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         val sharedPreferences = getPreferences()
-        val port = sharedPreferences.getString("byedpi_proxy_port", null)?.toInt() ?: 1080
-        val dns = sharedPreferences.getStringNotNull("dns_ip", "1.1.1.1")
+        val (ip, port) = sharedPreferences.getProxyIpAndPort()
+
+        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.8.8")
         val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
-        val tun2socksConfig = """
-        | misc:
-        |   task-stack-size: 81920
-        | socks5:
-        |   mtu: 8500
-        |   address: 127.0.0.1
-        |   port: $port
-        |   udp: udp
-        """.trimMargin("| ")
+        val tun2socksConfig = buildString {
+            appendLine("tunnel:")
+            appendLine("  mtu: 8500")
+
+            appendLine("misc:")
+            appendLine("  task-stack-size: 81920")
+
+            appendLine("socks5:")
+            appendLine("  address: $ip")
+            appendLine("  port: $port")
+            appendLine("  udp: udp")
+        }
 
         val configPath = try {
             File.createTempFile("config", "tmp", cacheDir).apply {
@@ -208,13 +239,17 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
 
-        Log.i(TAG, "Tun2Socks started")
+        Log.i(TAG, "Tun2Socks started. ip: $ip port: $port")
     }
 
     private fun stopTun2Socks() {
         Log.i(TAG, "Stopping tun2socks")
 
-        TProxyService.TProxyStopService()
+        try {
+            TProxyService.TProxyStopService()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to stop TProxyService", e)
+        }
 
         try {
             File(cacheDir, "config.tmp").delete()
@@ -222,8 +257,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
             Log.e(TAG, "Failed to delete config file", e)
         }
 
-        tunFd?.close() ?: Log.w(TAG, "VPN not running")
-        tunFd = null
+        try {
+            tunFd?.close()
+            tunFd = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close tunFd", e)
+        }
 
         Log.i(TAG, "Tun2socks stopped")
     }
@@ -269,6 +308,19 @@ class ByeDpiVpnService : LifecycleVpnService() {
             ByeDpiVpnService::class.java,
         )
 
+    private fun createNotificationPause(){
+        val notification = createPauseNotification(
+            this,
+            NOTIFICATION_CHANNEL_ID,
+            R.string.notification_title,
+            R.string.service_paused_text,
+            ByeDpiVpnService::class.java,
+        )
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(PAUSE_NOTIFICATION_ID, notification)
+    }
+
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
@@ -293,11 +345,42 @@ class ByeDpiVpnService : LifecycleVpnService() {
         if (dns.isNotBlank()) {
             builder.addDnsServer(dns)
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
         }
 
-        builder.addDisallowedApplication(applicationContext.packageName)
+        val preferences = getPreferences()
+        val listType = preferences.getStringNotNull("applist_type", "disable")
+        val listedApps = preferences.getSelectedApps()
+
+        when (listType) {
+            "blacklist" -> {
+                for (packageName in listedApps) {
+                    try {
+                        builder.addDisallowedApplication(packageName)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Не удалось добавить приложение $packageName в черный список", e)
+                    }
+                }
+
+                builder.addDisallowedApplication(applicationContext.packageName)
+            }
+
+            "whitelist" -> {
+                for (packageName in listedApps) {
+                    try {
+                        builder.addAllowedApplication(packageName)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Не удалось добавить приложение $packageName в белый список", e)
+                    }
+                }
+            }
+
+            "disable" -> {
+                builder.addDisallowedApplication(applicationContext.packageName)
+            }
+        }
 
         return builder
     }

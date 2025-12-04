@@ -9,7 +9,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/status_button"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -26,8 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/status_button"
-        android:layout_marginTop="8dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
         tools:text="@string/vpn_disconnected" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -37,5 +38,20 @@
         android:layout_below="@+id/status_text"
         android:layout_centerHorizontal="true"
         tools:text="127.0.0.1:1080" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/open_editor_link"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_below="@id/proxy_address"
+        android:layout_centerHorizontal="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/open_editor"
+        android:background="?attr/selectableItemBackground"
+        android:textColor="?attr/colorPrimary" />
 
 </RelativeLayout>

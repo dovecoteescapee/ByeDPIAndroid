@@ -6,23 +6,33 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <uses-feature android:name="android.software.leanback"
         android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen"
-        android:required="false" />    
+        android:required="false" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:banner="@mipmap/ic_launcher_foreground"
         android:logo="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:banner="@mipmap/ic_banner"
+        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.ByeDPI"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="34">
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">
@@ -36,9 +46,30 @@
         </activity>
 
         <activity
+            android:name=".activities.ToggleActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:launchMode="singleTask">
+        </activity>
+
+        <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_settings"
             android:exported="true"/>
+
+        <activity
+            android:name=".activities.TestActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_test"
+            android:exported="false"/>
+
+        <activity
+            android:name=".activities.TestSettingsActivity"
+            android:label="@string/title_settings"
+            android:exported="false"/>
 
         <service android:name=".services.ByeDpiVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
@@ -69,11 +100,27 @@
             android:label="@string/app_name"
             android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
             <intent-filter>
                 <action
                     android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.REBOOT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

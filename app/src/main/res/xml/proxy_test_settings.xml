@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_delay"
+        android:title="@string/test_delay"
+        android:inputType="number"
+        android:defaultValue="1"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_requests"
+        android:title="@string/test_requests"
+        android:inputType="number"
+        android:defaultValue="1"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_timeout"
+        android:title="@string/test_timeout"
+        android:inputType="number"
+        android:defaultValue="3"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_sni"
+        android:title="@string/test_settings_sni"
+        android:inputType="text"
+        android:defaultValue="google.com"
+        app:useSimpleSummaryProvider="true" />
+
+    <SwitchPreference
+        android:key="byedpi_proxytest_fulllog"
+        android:title="@string/test_settings_fulllog" />
+
+    <SwitchPreference
+        android:key="byedpi_proxytest_logclickable"
+        android:title="@string/test_settings_logclickable" />
+
+    <MultiSelectListPreference
+        android:key="byedpi_proxytest_domain_lists"
+        android:title="@string/test_settings_domain_lists"
+        android:entries="@array/domain_lists_entries"
+        android:entryValues="@array/domain_lists_values"
+        android:defaultValue="@array/domain_lists_default"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        android:key="byedpi_proxytest_domains"
+        android:title="@string/test_settings_domains"
+        android:enabled="false"
+        android:inputType="textMultiLine"
+        app:useSimpleSummaryProvider="true" />
+
+    <SwitchPreference
+        android:key="byedpi_proxytest_usercommands"
+        android:title="@string/test_settings_usercommands" />
+
+    <EditTextPreference
+        android:key="byedpi_proxytest_commands"
+        android:title="@string/test_settings_commands"
+        android:enabled="false"
+        android:inputType="textMultiLine"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

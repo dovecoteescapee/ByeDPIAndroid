@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.services
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
@@ -14,10 +15,12 @@ import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 class ByeDpiProxyService : LifecycleService() {
     private var proxy = ByeDpiProxy()
@@ -27,6 +30,7 @@ class ByeDpiProxyService : LifecycleService() {
     companion object {
         private val TAG: String = ByeDpiProxyService::class.java.simpleName
         private const val FOREGROUND_SERVICE_ID: Int = 2
+        private const val PAUSE_NOTIFICATION_ID: Int = 3
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPI Proxy"
 
         private var status: ServiceStatus = ServiceStatus.Disconnected
@@ -49,6 +53,14 @@ class ByeDpiProxyService : LifecycleService() {
                 START_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch {
+                    stop()
+                    createNotificationPause()
+                }
+                START_NOT_STICKY
+            }
+
             STOP_ACTION -> {
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
@@ -64,17 +76,20 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun start() {
         Log.i(TAG, "Starting")
 
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(PAUSE_NOTIFICATION_ID)
+
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "Proxy already connected")
             return
         }
 
         try {
+            startForeground()
             mutex.withLock {
                 startProxy()
             }
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
@@ -96,16 +111,19 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private suspend fun stop() {
-        Log.i(TAG, "Stopping VPN")
+        Log.i(TAG, "Stopping")
 
         mutex.withLock {
-            stopProxy()
+            withContext(Dispatchers.IO) {
+                stopProxy()
+            }
         }
+
         updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 
-    private suspend fun startProxy() {
+    private fun startProxy() {
         Log.i(TAG, "Starting proxy")
 
         if (proxyJob != null) {
@@ -118,15 +136,16 @@ class ByeDpiProxyService : LifecycleService() {
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = proxy.startProxy(preferences)
+            delay(500)
 
-            withContext(Dispatchers.Main) {
-                if (code != 0) {
-                    Log.e(TAG, "Proxy stopped with code $code")
-                    updateStatus(ServiceStatus.Failed)
-                } else {
-                    updateStatus(ServiceStatus.Disconnected)
-                }
+            if (code != 0) {
+                Log.e(TAG, "Proxy stopped with code $code")
+                updateStatus(ServiceStatus.Failed)
+            } else {
+                updateStatus(ServiceStatus.Disconnected)
             }
+
+            stopSelf()
         }
 
         Log.i(TAG, "Proxy started")
@@ -140,9 +159,24 @@ class ByeDpiProxyService : LifecycleService() {
             return
         }
 
-        proxy.stopProxy()
-        proxyJob?.join()
-        proxyJob = null
+        try {
+            proxy.stopProxy()
+            proxyJob?.cancel()
+
+            val completed = withTimeoutOrNull(2000) {
+                proxyJob?.join()
+                true
+            }
+
+            if (completed == null) {
+                Log.w(TAG, "proxy not finish in time, cancelling...")
+                proxy.jniForceClose()
+            }
+
+            proxyJob = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close proxyJob", e)
+        }
 
         Log.i(TAG, "Proxy stopped")
     }
@@ -186,4 +220,17 @@ class ByeDpiProxyService : LifecycleService() {
             R.string.proxy_notification_content,
             ByeDpiProxyService::class.java,
         )
+
+    private fun createNotificationPause(){
+        val notification = createPauseNotification(
+            this,
+            NOTIFICATION_CHANNEL_ID,
+            R.string.notification_title,
+            R.string.service_paused_text,
+            ByeDpiVpnService::class.java,
+        )
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(PAUSE_NOTIFICATION_ID, notification)
+    }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="?attr/history_pref_icon_space"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginTop="0dp">
+
+    <TextView
+        android:id="@+id/clear_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cmd_args_clear" />
+</RelativeLayout>

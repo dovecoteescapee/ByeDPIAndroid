@@ -1,1 +1,12 @@
-<p><i>ByeDPI</i> runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship. It runs a SOCKS5 proxy <a href='https://github.com/hufrea/byedpi' target='_blank' rel='nofollow noopener'>ByeDPI</a> and redirects all traffic through it.</p><p>To bypass some blocks, you may need to change the settings. More about the various settings can be found in the <a href='https://github.com/hufrea/byedpi/blob/main/README.md' target='_blank' rel='nofollow noopener'>ByeDPI documentation</a>.</p><p>The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.</p>
+<p><i>ByeByeDPI</i> launches a local SOCKS5 proxy <a href='https://github.com/hufrea/byedpi' target='_blank' rel='nofollow noopener'>ByeDPI</a> to bypass DPI and redirects all traffic through it.</p>
+<p>For stable operation, configuration adjustments may be required. You can read more about various settings in the <a href='https://github.com/hufrea/byedpi/blob/main/README.md' target='_blank' rel='nofollow noopener'>ByeDPI documentation</a>.</p>
+<p>The application uses VPN mode on Android to redirect traffic but does not transmit anything to a remote server. It does not encrypt traffic or hide your IP address.</p>
+<p>
+<b>Features</b><br>
+* Support for app filtering in VPN mode (split tunneling via whitelist/blacklist)<br>
+* Auto-launch of VPN/Proxy on device startup<br>
+* Saving command-line parameter lists with switching capability<br>
+* Improved compatibility with Android TV/BOX<br>
+* Import/export of settings<br>
+* Ability to test application performance using a set of pre-configured commands (Beta)<br>
+</p>

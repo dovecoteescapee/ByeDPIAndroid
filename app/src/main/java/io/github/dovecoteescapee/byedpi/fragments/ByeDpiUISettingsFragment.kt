@@ -19,8 +19,6 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.byedpi_ui_settings, rootKey)
 
-        setEditTextPreferenceListener("byedpi_proxy_ip") { checkIp(it) }
-        setEditTestPreferenceListenerPort("byedpi_proxy_port")
         setEditTestPreferenceListenerInt(
             "byedpi_max_connections",
             1,

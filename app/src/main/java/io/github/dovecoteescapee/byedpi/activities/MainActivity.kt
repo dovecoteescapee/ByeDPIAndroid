@@ -15,12 +15,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.*
-import io.github.dovecoteescapee.byedpi.fragments.MainSettingsFragment
 import io.github.dovecoteescapee.byedpi.databinding.ActivityMainBinding
 import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.services.appStatus
@@ -29,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
 
     companion object {
@@ -58,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     private val logsRegister =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { log ->
             lifecycleScope.launch(Dispatchers.IO) {
                 val logs = collectLogs()
 
@@ -69,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    val uri = it.data?.data ?: run {
+                    val uri = log.data?.data ?: run {
                         Log.e(TAG, "No data in result")
                         return@launch
                     }
@@ -140,25 +138,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.statusButton.setOnClickListener {
+            binding.statusButton.isClickable = false
+
             val (status, _) = appStatus
             when (status) {
                 AppStatus.Halted -> start()
                 AppStatus.Running -> stop()
             }
+
+            binding.statusButton.postDelayed({
+                binding.statusButton.isClickable = true
+            }, 1000)
         }
 
-        val theme = getPreferences()
-            .getString("app_theme", null)
-        MainSettingsFragment.setTheme(theme ?: "system")
+        binding.openEditorLink.setOnClickListener {
+            val (status, _) = appStatus
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+            if (status == AppStatus.Halted) {
+                val intent = Intent(this, SettingsActivity::class.java)
+                val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+                intent.putExtra("open_fragment", if (useCmdSettings) "cmd" else "ui")
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
+
+        if (getPreferences().getBoolean("auto_connect", false) && appStatus.first != AppStatus.Running) {
+            this.start()
+        }
+
+        ShortcutUtils.update(this)
     }
 
     override fun onResume() {
@@ -185,8 +199,7 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, SettingsActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
                 }
                 true
             }
@@ -232,9 +245,9 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "Updating status: $status, $mode")
 
         val preferences = getPreferences()
-        val proxyIp = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-        val proxyPort = preferences.getStringNotNull("byedpi_proxy_port", "1080")
-        binding.proxyAddress.text = getString(R.string.proxy_address, proxyIp, proxyPort)
+        val (ip, port) = preferences.getProxyIpAndPort()
+
+        binding.proxyAddress.text = getString(R.string.proxy_address, ip, port)
 
         when (status) {
             AppStatus.Halted -> {
@@ -249,7 +262,6 @@ class MainActivity : AppCompatActivity() {
                         binding.statusButton.setText(R.string.proxy_start)
                     }
                 }
-                binding.statusButton.isEnabled = true
             }
 
             AppStatus.Running -> {
@@ -264,7 +276,6 @@ class MainActivity : AppCompatActivity() {
                         binding.statusButton.setText(R.string.proxy_stop)
                     }
                 }
-                binding.statusButton.isEnabled = true
             }
         }
     }

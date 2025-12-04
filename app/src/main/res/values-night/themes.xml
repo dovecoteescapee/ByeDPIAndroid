@@ -1,13 +1,21 @@
 <resources>
-    <!-- Base application theme. -->
     <style name="Theme.ByeDPI" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimary">#FFFFFF</item>
         <item name="colorPrimaryVariant">#E5E5E5</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
+        <item name="colorOnPrimary">#000000</item>
+
         <item name="colorSecondary">#5976DF</item>
         <item name="colorSecondaryVariant">#3C52A3</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <item name="android:statusBarColor">#000000</item>
+    </style>
+
+    <style name="Theme.ByeDPI.History.PaddingLeft" parent="Theme.ByeDPI">
+        <item name="history_pref_icon_space">72dp</item>
+    </style>
+
+    <style name="Theme.ByeDPI.History.NoPaddingLeft" parent="Theme.ByeDPI">
+        <item name="history_pref_icon_space">16dp</item>
     </style>
 </resources>

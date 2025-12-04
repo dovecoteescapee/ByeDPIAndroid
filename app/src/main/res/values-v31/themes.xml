@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ByeDPI" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainer</item>
+
+        <item name="actionBarStyle">@style/ActionBarTheme</item>
+        <item name="actionBarTheme">@style/ActionBarTextTheme</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <item name="colorControlActivated">?attr/colorPrimary</item>
+        <item name="colorControlHighlight">?attr/colorSecondaryContainer</item>
+
+        <item name="alertDialogTheme">@style/CustomAlertDialog</item>
+
+        <item name="android:textAppearanceListItem">@style/TextPrimary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextSummary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextSummary</item>
+    </style>
+
+    <style name="Theme.ByeDPI.History.PaddingLeft" parent="Theme.ByeDPI">
+        <item name="history_pref_icon_space">72dp</item>
+    </style>
+
+    <style name="Theme.ByeDPI.History.NoPaddingLeft" parent="Theme.ByeDPI">
+        <item name="history_pref_icon_space">16dp</item>
+    </style>
+
+    <style name="ActionBarTheme" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="background">?attr/colorSurfaceContainer</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="ActionBarTextTheme" parent="ThemeOverlay.Material3.ActionBar">
+        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowBackground">@drawable/material_alert</item>
+        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="TextPrimary" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextSummary" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

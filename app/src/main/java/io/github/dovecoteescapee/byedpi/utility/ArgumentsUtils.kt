@@ -3,8 +3,8 @@ package io.github.dovecoteescapee.byedpi.utility
 // Based on https://gist.github.com/raymyers/8077031
 fun shellSplit(string: CharSequence): List<String> {
     val tokens: MutableList<String> = ArrayList()
-    var escaping = false
     var quoteChar = ' '
+    var escaping = false
     var quoting = false
     var lastCloseQuoteIndex = Int.MIN_VALUE
     var current = StringBuilder()
@@ -15,8 +15,12 @@ fun shellSplit(string: CharSequence): List<String> {
         if (escaping) {
             current.append(c)
             escaping = false
-        } else if (c == '\\' && !(quoting && quoteChar == '\'')) {
-            escaping = true
+        } else if (c == '\\' && quoting) {
+            if (i + 1 < string.length && string[i + 1] == quoteChar) {
+                escaping = true
+            } else {
+                current.append(c)
+            }
         } else if (quoting && c == quoteChar) {
             quoting = false
             lastCloseQuoteIndex = i

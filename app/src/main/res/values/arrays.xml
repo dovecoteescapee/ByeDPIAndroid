@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <array name="languages">
+        <item name="system">Автоматически</item>
+        <item name="ru">Русский</item>
+        <item name="en">English</item>
+        <item name="tr">Türkçe</item>
+        <item name="kk">Қазақша</item>
+    </array>
+    <array name="languages_entries">
+        <item name="system">system</item>
+        <item name="ru">ru</item>
+        <item name="en">en</item>
+        <item name="tr">tr</item>
+        <item name="kk">kk</item>
+    </array>
+
     <array name="themes">
-        <item name="system">System</item>
-        <item name="light">Light</item>
-        <item name="dark">Dark</item>
+        <item name="system">Системная</item>
+        <item name="light">Светлая</item>
+        <item name="dark">Темная</item>
     </array>
     <array name="themes_entries">
         <item name="system">system</item>
@@ -38,13 +53,43 @@
     </array>
 
     <array name="byedpi_hosts_modes">
-        <item name="disable">Disable</item>
-        <item name="blacklist">Blacklist</item>
-        <item name="whitelist">Whitelist</item>
+        <item name="disable">Нет</item>
+        <item name="blacklist">Черный список</item>
+        <item name="whitelist">Белый список</item>
     </array>
     <array name="byedpi_hosts_modes_entries">
         <item name="disable">disable</item>
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
+    </array>
+
+    <array name="applist_types">
+        <item name="disable">Нет</item>
+        <item name="blacklist">Черный список</item>
+        <item name="whitelist">Белый список</item>
+    </array>
+    <array name="applist_types_entries">
+        <item name="disable">disable</item>
+        <item name="blacklist">blacklist</item>
+        <item name="whitelist">whitelist</item>
+    </array>
+
+    <array name="domain_lists_entries">
+        <item>YouTube</item>
+        <item>GoogleVideo</item>
+        <item>Discord</item>
+        <item>Cloudflare</item>
+        <item>Свой список</item>
+    </array>
+    <array name="domain_lists_values">
+        <item>youtube</item>
+        <item>googlevideo</item>
+        <item>discord</item>
+        <item>cloudflare</item>
+        <item>custom</item>
+    </array>
+    <array name="domain_lists_default">
+        <item>youtube</item>
+        <item>googlevideo</item>
     </array>
 </resources>
