@@ -290,9 +290,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 .addRoute("::", 0)
         }
 
-        if (dns.isNotBlank()) {
-            builder.addDnsServer(dns)
-        }
+        
+        builder.addDnsServer("176.99.11.77")
+        builder.addDnsServer("80.78.247.254")
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
         }
