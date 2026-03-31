@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="connect"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification"
+        android:shortcutShortLabel="@string/shortcut_connect"
+        android:shortcutLongLabel="@string/shortcut_connect_long">
+        <intent
+            android:action="io.github.dovecoteescapee.byedpi.ACTION_CONNECT"
+            android:targetPackage="io.github.dovecoteescapee.byedpi"
+            android:targetClass="io.github.dovecoteescapee.byedpi.activities.ShortcutActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="disconnect"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification"
+        android:shortcutShortLabel="@string/shortcut_disconnect"
+        android:shortcutLongLabel="@string/shortcut_disconnect_long">
+        <intent
+            android:action="io.github.dovecoteescapee.byedpi.ACTION_DISCONNECT"
+            android:targetPackage="io.github.dovecoteescapee.byedpi"
+            android:targetClass="io.github.dovecoteescapee.byedpi.activities.ShortcutActivity" />
+    </shortcut>
+</shortcuts>

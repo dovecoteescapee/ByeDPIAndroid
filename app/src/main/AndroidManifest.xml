@@ -6,6 +6,16 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
     <uses-feature android:name="android.software.leanback"
         android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen"
@@ -32,6 +42,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity
+            android:name=".activities.ShortcutActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_CONNECT" />
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_DISCONNECT" />
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_TOGGLE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -62,6 +89,24 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="proxy" />
         </service>
+
+        <service android:name=".services.AppMonitorService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="app_monitor" />
+        </service>
+
+        <receiver
+            android:name=".receivers.ActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_CONNECT" />
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_DISCONNECT" />
+                <action android:name="io.github.dovecoteescapee.byedpi.ACTION_TOGGLE" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".services.QuickTileService"

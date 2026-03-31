@@ -29,6 +29,20 @@ object ServiceManager {
         }
     }
 
+    fun startMonitor(context: Context) {
+        Log.i(TAG, "Starting app monitor")
+        val intent = Intent(context, AppMonitorService::class.java)
+        intent.action = AppMonitorService.ACTION_START_MONITOR
+        ContextCompat.startForegroundService(context, intent)
+    }
+
+    fun stopMonitor(context: Context) {
+        Log.i(TAG, "Stopping app monitor")
+        val intent = Intent(context, AppMonitorService::class.java)
+        intent.action = AppMonitorService.ACTION_STOP_MONITOR
+        context.startService(intent)
+    }
+
     fun stop(context: Context) {
         val (_, mode) = appStatus
         when (mode) {

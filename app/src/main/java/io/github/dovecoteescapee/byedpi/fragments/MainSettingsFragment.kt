@@ -1,13 +1,19 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
+import android.app.AppOpsManager
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
+import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
@@ -68,17 +74,88 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
 
+        // Auto-connect setup
+        setupAutoConnect()
+
         updatePreferences()
     }
 
     override fun onResume() {
         super.onResume()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
+        updateAutoConnectSummary()
     }
 
     override fun onPause() {
         super.onPause()
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+    }
+
+    private fun setupAutoConnect() {
+        val autoConnectSwitch = findPreferenceNotNull<SwitchPreference>("auto_connect_enabled")
+        val appPicker = findPreferenceNotNull<Preference>("auto_connect_app_picker")
+
+        autoConnectSwitch.setOnPreferenceChangeListener { _, newValue ->
+            val enabled = newValue as Boolean
+            if (enabled) {
+                if (!hasUsageStatsPermission()) {
+                    Toast.makeText(requireContext(), R.string.usage_access_required, Toast.LENGTH_LONG).show()
+                    startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                    return@setOnPreferenceChangeListener false
+                }
+                val pkg = sharedPreferences?.getString("auto_connect_package", null)
+                if (pkg != null) {
+                    ServiceManager.startMonitor(requireContext())
+                }
+            } else {
+                ServiceManager.stopMonitor(requireContext())
+            }
+            true
+        }
+
+        appPicker.setOnPreferenceClickListener {
+            val dialog = AppPickerDialogFragment()
+            dialog.show(parentFragmentManager, "app_picker")
+            true
+        }
+
+        parentFragmentManager.setFragmentResultListener(
+            AppPickerDialogFragment.RESULT_KEY,
+            this
+        ) { _, bundle ->
+            val packageName = bundle.getString(AppPickerDialogFragment.RESULT_PACKAGE)
+            val appName = bundle.getString(AppPickerDialogFragment.RESULT_APP_NAME)
+
+            sharedPreferences?.edit()
+                ?.putString("auto_connect_package", packageName)
+                ?.putString("auto_connect_app_name", appName)
+                ?.apply()
+
+            updateAutoConnectSummary()
+
+            if (sharedPreferences?.getBoolean("auto_connect_enabled", false) == true) {
+                ServiceManager.startMonitor(requireContext())
+            }
+        }
+
+        updateAutoConnectSummary()
+    }
+
+    private fun updateAutoConnectSummary() {
+        val appPicker = findPreference<Preference>("auto_connect_app_picker") ?: return
+        val appName = sharedPreferences?.getString("auto_connect_app_name", null)
+        appPicker.summary = appName ?: getString(R.string.auto_connect_app_picker_summary)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = requireContext().getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            requireContext().packageName
+        )
+        return mode == AppOpsManager.MODE_ALLOWED
     }
 
     private fun updatePreferences() {

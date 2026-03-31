@@ -37,6 +37,23 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/auto_connect_category">
+
+        <SwitchPreference
+            android:key="auto_connect_enabled"
+            android:title="@string/auto_connect_enabled_title"
+            android:summary="@string/auto_connect_enabled_summary"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="auto_connect_app_picker"
+            android:title="@string/auto_connect_app_picker_title"
+            android:summary="@string/auto_connect_app_picker_summary"
+            android:dependency="auto_connect_enabled" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_category">
 
         <SwitchPreference

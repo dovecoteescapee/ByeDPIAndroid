@@ -72,4 +72,18 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
+    <string name="auto_connect_category">Auto-connect</string>
+    <string name="auto_connect_enabled_title">Auto-connect for app</string>
+    <string name="auto_connect_enabled_summary">Automatically connect when selected app is opened</string>
+    <string name="auto_connect_app_picker_title">Select app</string>
+    <string name="auto_connect_app_picker_summary">No app selected</string>
+    <string name="auto_connect_notification_title">ByeDPI Auto-connect</string>
+    <string name="auto_connect_notification_content">Monitoring for %1$s</string>
+    <string name="auto_connect_channel_name">Auto-connect</string>
+    <string name="usage_access_required">Usage access permission is required to detect when apps are opened. Please grant it in Settings.</string>
+    <string name="search_hint">Search apps</string>
+    <string name="shortcut_connect">Connect</string>
+    <string name="shortcut_connect_long">Connect ByeDPI</string>
+    <string name="shortcut_disconnect">Disconnect</string>
+    <string name="shortcut_disconnect_long">Disconnect ByeDPI</string>
 </resources>
